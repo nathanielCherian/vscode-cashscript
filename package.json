@@ -8,7 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/nathanielCherian/vscode-cashscript"
 	},
-	"categories": [],
+	"categories": ["Snippets"],
 	"keywords": [
 		"multi-root ready"
 	],
@@ -16,7 +16,7 @@
 		"vscode": "^1.43.0"
 	},
 	"activationEvents": [
-		"onLanguage:plaintext"
+		"onLanguage:cashscript"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
@@ -42,7 +42,33 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
-		}
+		},
+		"languages": [
+			{
+			  "id": "cashscript",
+			  "aliases": [
+				"Cashscript",
+				"cashscript"
+			  ],
+			  "extensions": [
+				".cash"
+			  ],
+			  "configuration": "./cashscript.configuration.json"
+			}
+		  ],
+		"snippets": [
+			{
+				"language": "cashscript",
+				"path": "./snippets/cashscript.snippets.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "cashscript",
+				"scopeName": "source.cash",
+				"path": "./syntaxes/cash.tmGrammar.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

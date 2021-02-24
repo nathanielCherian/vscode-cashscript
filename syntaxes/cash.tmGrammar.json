@@ -1,0 +1,151 @@
+{
+	"scopeName": "source.cash",
+	"patterns": [
+		{"include":"#comment"},
+		{"include":"#string"},
+		{"include":"#unit"},
+		{"include":"#type"},
+		{"include":"#control"},
+		{"include":"#function"},
+		{"include":"#declaration"},
+
+		{"include":"#numeric"}
+	],
+	"repository": {
+
+	  "comment": {
+		"patterns": [{ "include": "#comment-line" }, {"include":"#comment-block"}]
+	  },
+	  "comment-line": {
+		"match": "(?<!tp:)//.*?$",
+		"name": "comment.line.cashscript"
+	  },
+	  "comment-block": {
+		"begin": "/\\*",
+		"end": "\\*/",
+		"name": "comment.block.cashscript"
+	  },
+
+	  "control" : {
+		  "patterns": [{"include":"#control-pragma"}]
+	  },
+	  "control-pragma":{
+		"match": "\\b(pragma)(?:\\s+([A-Za-z_]\\w+)\\s+([^\\s]+))?\\b",
+		"captures": {
+			"1": {
+				"name": "keyword.control.pragma.cashscript"
+			},
+			"2": {
+				"name": "constant.other.pragma.cashscript"
+			},
+			"3": {
+				"name": "constant.character.pragma.cashscript"
+			}
+		}
+	  },
+
+	  "function":{
+		  "patterns":[
+				{
+					"match": "\\b(require)\\b",
+					"name":"keyword.control.function.require.cashscript"
+				},
+				{
+					"match": "\\b(split|reverse)\\b",
+					"name":"support.function.function.splitreverse.cashscript"
+				},
+				{
+					"match": "\\b(abs|min|max|within)\\b",
+					"name":"support.function.function.arithmetic.cashscript"
+				},
+				{
+					"match": "\\b(ripemd160|sha1|sha256|hash160|hash256)\\b",
+					"name":"support.function.function.hashing.cashscript"
+				},
+				{
+					"match": "\\b(checkSig|checkMultiSig|checkDataSig)\\b",
+					"name":"support.function.function.hashing.cashscript"
+				}
+		  ]
+	  },
+
+	  "string": {
+		"patterns": [
+			{
+				"match": "\\\".*?\\\"",
+				"name": "string.quoted.double.cashscript"
+			},
+			{
+				"match": "\\'.*?\\'",
+				"name": "string.quoted.single.cashscript"
+			}
+		]
+	},
+
+	"numeric":{
+		"patterns":[
+			{
+				"match": "\\b(\\d+(\\.\\d+)?)\\b",
+				"name":"constant.numeric.decimal.cashscript"
+			},
+			{
+				"match": "\\b(0[xX][a-fA-F0-9]+)\\b",
+				"name":"constant.numeric.hexadecimal.cashscript"
+			},
+			{
+				"match":"\\b([A-Za-z_]+)\\b",
+				"name":"meta.cashscript"
+			}
+		]
+	},
+
+	"unit":{
+		"patterns":[
+			{
+				"match":"\\b(satoshis\\d*|sats\\d*|finney\\d*|bits\\d*|bitcoin\\d*)\\b",
+				"name":"support.variable.unit.numeric.cashscript"
+			},
+			{
+				"match":"\\b(seconds\\d*|minutes\\d*|hours\\d*|days\\d*|weeks\\d*)\\b",
+				"name":"support.variable.unit.time.cashscript"
+			}
+		]
+	},
+
+	"type":{
+		"patterns":[{"include":"#type-primitive"}]
+	},
+	"type-primitive":{
+		"match": "\\b(int\\d*|bool\\d*|string\\d*|pubkey\\d*|sig\\d*|datasig\\d*|bytes|bytes\\d+(\\.\\d+)?\\d*)\\b",
+		"name": "support.type.primitive.cashscript"
+	},
+
+	  "declaration":{
+		  "patterns":[{"include":"#declaration-contract"}, {"include":"#declaration-function"}]
+	  },
+	  "declaration-contract":{
+		"match": "\\b(contract)(\\s+([A-Za-z_]\\w*))?\\b",
+		"captures": {
+			"1": {
+				"name": "storage.type.declaration.cashscript"
+			},
+			"3": {
+				"name": "entity.name.type.declaration.cashscript"
+			}
+		}
+	  },
+	  "declaration-function":{
+		"match": "\\b(function)(\\s+([A-Za-z_]\\w*))?\\b",
+		"captures": {
+			"1": {
+				"name": "storage.type.declaration.cashscript"
+			},
+			"3": {
+				"name": "entity.name.function.declaration.cashscript"
+			}
+		}
+	  }
+
+
+	}
+  }
