@@ -9,6 +9,7 @@
 		{"include":"#function"},
 		{"include":"#declaration"},
 
+		{"include":"#variable"},
 		{"include":"#numeric"}
 	],
 	"repository": {
@@ -27,7 +28,7 @@
 	  },
 
 	  "control" : {
-		  "patterns": [{"include":"#control-pragma"}]
+		  "patterns": [{"include":"#control-pragma"}, {"include":"#control-flow"}]
 	  },
 	  "control-pragma":{
 		"match": "\\b(pragma)(?:\\s+([A-Za-z_]\\w+)\\s+([^\\s]+))?\\b",
@@ -42,6 +43,10 @@
 				"name": "constant.character.pragma.cashscript"
 			}
 		}
+	  },
+	  "control-flow":{
+		  "match":"(if|else)",
+		  "name":"keyword.control.flow.cashscript"
 	  },
 
 	  "function":{
@@ -110,7 +115,7 @@
 				"name":"support.variable.unit.time.cashscript"
 			},
 			{
-				"match":"(tx)(?:.(time|age|version|hashPrevouts|hashSequence|outpoint|bytecode|value|sequence|hashOutputs|locktime|hashtype))?",
+				"match":"(tx)(?:.(time|age|version|hashPrevouts|hashSequence|outpoint|bytecode|value|sequence|hashOutputs|locktime|hashtype|preimage))?",
 				"captures":{
 					"1":{
 						"name":"support.variable.unit.tx.cashscript"
@@ -127,15 +132,19 @@
 	},
 
 	"type":{
-		"patterns":[{"include":"#type-primitive"}]
+		"patterns":[{"include":"#type-primitive"}, {"include":"#type-boolean"}]
 	},
 	"type-primitive":{
 		"match": "\\b(int\\d*|bool\\d*|string\\d*|pubkey\\d*|sig\\d*|datasig\\d*|bytes|bytes\\d+(\\.\\d+)?\\d*)\\b",
-		"name": "support.type.primitive.cashscript"
+		"name": "constant.language.primitive.cashscript"
+	},
+	"type-boolean":{
+		"match":"true|false",
+		"name":"constant.language.cashscript"
 	},
 
 	  "declaration":{
-		  "patterns":[{"include":"#declaration-contract"}, {"include":"#declaration-function"}]
+		  "patterns":[{"include":"#declaration-contract"}, {"include":"#declaration-function"}, {"include":"#declaration-output"}]
 	  },
 	  "declaration-contract":{
 		"match": "\\b(contract)(\\s+([A-Za-z_]\\w*))?\\b",
@@ -158,8 +167,28 @@
 				"name": "entity.name.function.declaration.cashscript"
 			}
 		}
-	  }
+	  },
+	  "declaration-output":{
+		  "match":"(new)\\s+(?:(OutputP2PKH|OutputP2SH|OutputNullData))?",
+		  "captures":{
+			  "1":{
+				  "name":"keyword.control.cashscript"
+			  },
+			  "2":{
+				  "name":"support.function.cashscript"
+			  }
+		  }
+	  },
 
+	  "variable":{
+		  "patterns":[
+			  {
+				  "match":"[A-Za-z][a-zA-Z0-9_]*",
+				  "name":"support.variable.name.cashscript"
+			  }
+		  ]
+	  }
+	  
 
 	}
   }

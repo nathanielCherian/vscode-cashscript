@@ -66,6 +66,8 @@ connection.onInitialize((params: InitializeParams) => {
 	return result;
 });
 
+
+
 connection.onInitialized(() => {
 	if (hasConfigurationCapability) {
 		// Register for all configuration changes.
