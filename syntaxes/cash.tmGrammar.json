@@ -108,6 +108,20 @@
 			{
 				"match":"\\b(seconds\\d*|minutes\\d*|hours\\d*|days\\d*|weeks\\d*)\\b",
 				"name":"support.variable.unit.time.cashscript"
+			},
+			{
+				"match":"(tx)(?:.(time|age|version|hashPrevouts|hashSequence|outpoint|bytecode|value|sequence|hashOutputs|locktime|hashtype))?",
+				"captures":{
+					"1":{
+						"name":"support.variable.unit.tx.cashscript"
+					},
+					"2":{
+						"name":"support.variable.unit.tx.cashscript"
+					},
+					"3":{
+						"name":"invalid.illegal"
+					}
+				}
 			}
 		]
 	},
@@ -129,7 +143,7 @@
 			"1": {
 				"name": "storage.type.declaration.cashscript"
 			},
-			"3": {
+			"2": {
 				"name": "entity.name.type.declaration.cashscript"
 			}
 		}

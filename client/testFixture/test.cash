@@ -4,7 +4,7 @@ contract TransferWithTimeout(pubkey sender, pubkey recipient, int timeout) {
     // Require recipient's signature to match
     function transfer(sig recipientSig) {
         
-
+        require(tx.time == 1000000)
         require(checkSig(recipientSig, recipient));
     }
 
