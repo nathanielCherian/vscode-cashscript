@@ -18,6 +18,7 @@ import {
 } from 'vscode-languageserver/node';
 
 import {TextDocument} from 'vscode-languageserver-textdocument';
+import CompletionService from './CompletionService';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -192,18 +193,10 @@ connection.onCompletion(
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
+		const doc = documents.get(_textDocumentPosition.textDocument.uri);
+		//console.log(doc)
+		const cs = new CompletionService();
+		return cs.getAllCompletions();
 	}
 );
 
