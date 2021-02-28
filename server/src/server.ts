@@ -194,8 +194,8 @@ connection.onCompletion(
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
 		const doc = documents.get(_textDocumentPosition.textDocument.uri);
-		//console.log(doc)
-		const cs = new CompletionService();
+		console.log(doc)
+		const cs = new CompletionService(_textDocumentPosition);
 		return cs.getAllCompletions();
 	}
 );

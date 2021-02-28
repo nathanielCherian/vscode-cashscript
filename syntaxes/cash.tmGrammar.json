@@ -28,7 +28,7 @@
 	  },
 
 	  "control" : {
-		  "patterns": [{"include":"#control-pragma"}, {"include":"#control-flow"}]
+		  "patterns": [{"include":"#control-pragma"}, {"include":"#control-cashscript"}, {"include":"#control-flow"}]
 	  },
 	  "control-pragma":{
 		"match": "\\b(pragma)(?:\\s+([A-Za-z_]\\w+)\\s+([^\\s]+))?\\b",
@@ -43,6 +43,10 @@
 				"name": "constant.character.pragma.cashscript"
 			}
 		}
+	  },
+	  "control-cashscript":{
+		"match":"cashscript",
+		"name":"contant.other.cashscript.cashscript"
 	  },
 	  "control-flow":{
 		  "match":"(if|else)",
