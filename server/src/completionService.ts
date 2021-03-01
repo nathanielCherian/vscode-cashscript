@@ -29,6 +29,14 @@ export default class CompletionService {
 				CompletionItem.create(words[i])
 			);		
 		}
+		/*
+		completions.push({
+			label:"require",
+			detail:"Takes a boolean expression and checks that it evaluates to true. If it evaluates to false instead, the transaction fails. This statement is used to ensure that the requirements are met to spend money from the contract.",
+			insertText:"require($1)",
+			insertTextFormat:2
+		});
+		*/
 		return completions;
 	}
 

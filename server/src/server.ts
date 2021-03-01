@@ -19,6 +19,7 @@ import {
 
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import CompletionService from './CompletionService';
+import CompilerErrors from './compilerErrors';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -30,6 +31,9 @@ let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
+
+let isValidatingFile: boolean = false;
+let validationDelay: number = 1500;
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -129,18 +133,39 @@ documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 });
 
+
+function validate(doc:TextDocument){
+	console.log("VALIDATE")
+	isValidatingFile = false;
+}
+
+
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
+	
+	console.log("CHANGE")
+	if(!isValidatingFile){
+		isValidatingFile = true;
+		setTimeout(() => validateTextDocument(change.document), validationDelay);
+	}
+	
+	//validateTextDocument(change.document);
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	let settings = await getDocumentSettings(textDocument.uri);
 
+	console.log("triggered bo");
+	isValidatingFile = false;
+
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	let text = textDocument.getText();
+
+	CompilerErrors.checkErrors(text);
+
+	/*
 	let pattern = /\b[A-Z]{2,}\b/g;
 	let m: RegExpExecArray | null;
 
@@ -179,7 +204,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	}
 
 	// Send the computed diagnostics to VSCode.
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });*/
 }
 
 connection.onDidChangeWatchedFiles(_change => {
@@ -194,7 +219,6 @@ connection.onCompletion(
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
 		const doc = documents.get(_textDocumentPosition.textDocument.uri);
-		console.log(doc)
 		const cs = new CompletionService(_textDocumentPosition);
 		return cs.getAllCompletions();
 	}

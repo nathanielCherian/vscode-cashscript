@@ -1,7 +1,12 @@
 {
 	"compilerOptions": {
 		"target": "es2019",
-		"lib": ["ES2019"],
+		"lib": ["ES2019",  
+			"es2017",
+			"esnext.bigint",
+			"dom",
+		  ],
+		"esModuleInterop": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"sourceMap": true,
