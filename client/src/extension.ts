@@ -4,7 +4,9 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { workspace, ExtensionContext } from 'vscode';
+import {compileFile} from 'cashc';
 
 import {
 	LanguageClient,
@@ -12,6 +14,8 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
+
+const fs = require('fs');
 
 let client: LanguageClient;
 
@@ -52,6 +56,48 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	
+	//Register command
+
+	const registerCompileCommand = () => {
+		const command = 'cashscript.compileContract';
+		const commandHandler = () => {
+			var filename = vscode.window.activeTextEditor.document.fileName;
+			const artifactJSON = JSON.stringify(compileFile(filename), null, 2);
+			filename = filename.split('.').slice(0, -1).join('.') + ".json"
+			fs.writeFile(filename, artifactJSON, (err) => {
+				if(err){
+					throw err
+				}
+			})
+			console.log(`Compiled contact to ${filename}`);
+		}
+		context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
+	}
+
+	registerCompileCommand();
+
+	/*
+	const command = 'cashscript.sayHello';
+	const commandHandler = (name:string = 'world') => {
+		var filename = vscode.window.activeTextEditor.document.fileName;
+		const artifactJSON = JSON.stringify(compileFile(filename), null, 2);
+		filename = filename.split('.').slice(0, -1).join('.') + ".json"
+		console.log(filename);
+		fs.writeFile(filename, artifactJSON, (err) => {
+			if(err){
+				throw err
+			}
+		})
+
+		console.log(`Hello ${name}!!!`);
+	};
+	context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
+	*/
+
+
+
 
 	// Start the client. This will also launch the server
 	client.start();

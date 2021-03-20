@@ -16,7 +16,9 @@
 		"vscode": "^1.43.0"
 	},
 	"activationEvents": [
-		"onLanguage:cashscript"
+		"onLanguage:cashscript",
+		"onCommand:cashscript.compileContract",
+		"onCommand:cashscript.sayHello"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
@@ -55,6 +57,16 @@
 			  ],
 			  "configuration": "./cashscript.configuration.json"
 			}
+		  ],
+		  "commands":[
+			  {
+				  "command":"cashscript.compileContract",
+				  "title":"Compile Contract"
+			  },
+			  {
+				  "command": "cashscript.sayHello",
+				  "title":"Say Hello"
+			  }
 		  ],
 		"snippets": [
 			{

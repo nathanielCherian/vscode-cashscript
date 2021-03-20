@@ -1,0 +1,32 @@
+{
+  "contractName": "P2PKH",
+  "constructorInputs": [
+    {
+      "name": "pkh",
+      "type": "bytes20"
+    }
+  ],
+  "abi": [
+    {
+      "name": "spend",
+      "covenant": false,
+      "inputs": [
+        {
+          "name": "pk",
+          "type": "pubkey"
+        },
+        {
+          "name": "s",
+          "type": "sig"
+        }
+      ]
+    }
+  ],
+  "bytecode": "OP_OVER OP_HASH160 OP_EQUALVERIFY OP_CHECKSIG",
+  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend(pubkey pk, sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n    }\r\n}",
+  "compiler": {
+    "name": "cashc",
+    "version": "0.6.0"
+  },
+  "updatedAt": "2021-03-20T06:17:35.663Z"
+}
