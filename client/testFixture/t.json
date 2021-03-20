@@ -1,0 +1,18 @@
+{
+  "contractName": "ContractName",
+  "constructorInputs": [],
+  "abi": [
+    {
+      "name": "test",
+      "covenant": false,
+      "inputs": []
+    }
+  ],
+  "bytecode": "OP_1",
+  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract ContractName() {\r\n    function test() {\r\n        require(true);\r\n    }\r\n\r\n}\r\n",
+  "compiler": {
+    "name": "cashc",
+    "version": "0.6.0"
+  },
+  "updatedAt": "2021-03-20T18:07:13.668Z"
+}

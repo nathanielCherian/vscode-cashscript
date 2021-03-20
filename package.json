@@ -17,7 +17,6 @@
 	},
 	"activationEvents": [
 		"onLanguage:cashscript",
-		"onCommand:cashscript.compileContract",
 		"onCommand:cashscript.sayHello"
 	],
 	"main": "./client/out/extension",
@@ -44,6 +43,15 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
+		},
+		"menus":{
+			"editor/title":[
+				{
+					"when":"resourceLangId == cashscript",
+					"command":"cashscript.compileContract",
+					"group": "navigation"
+				}
+			]
 		},
 		"languages": [
 			{
@@ -80,7 +88,7 @@
 				"scopeName": "source.cash",
 				"path": "./syntaxes/cash.tmGrammar.json"
 			}
-		]
+		] 
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

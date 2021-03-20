@@ -1,0 +1,13 @@
+{
+	"iconDefinitions": {
+		"_cashscript": {
+		  "iconPath": "../images/cashscript.svg"
+		}
+	},
+	"fileExtensions": {
+		"cash":"_cashscript"
+	},
+	"languageIds": {
+		"cashscript":"_cashscript"
+	}
+}

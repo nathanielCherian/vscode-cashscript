@@ -1,0 +1,8 @@
+ ,
+		"iconThemes": [
+			{
+				"id": "cashscript",
+				"label": "%CashscriptTheme%",
+				"path":"./fileicons/cashscript-icon-theme.json"
+			}
+		] 

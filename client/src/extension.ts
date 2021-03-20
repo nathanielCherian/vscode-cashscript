@@ -7,6 +7,14 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { workspace, ExtensionContext } from 'vscode';
 import {compileFile} from 'cashc';
+import {
+	asmToScript,
+	calculateBytesize,
+	countOpcodes,
+	exportArtifact,
+	scriptToAsm,
+	scriptToBytecode,
+  } from '@cashscript/utils';
 
 import {
 	LanguageClient,
@@ -64,15 +72,38 @@ export function activate(context: ExtensionContext) {
 		const command = 'cashscript.compileContract';
 		const commandHandler = () => {
 			var filename = vscode.window.activeTextEditor.document.fileName;
-			const artifactJSON = JSON.stringify(compileFile(filename), null, 2);
-			filename = filename.split('.').slice(0, -1).join('.') + ".json"
-			fs.writeFile(filename, artifactJSON, (err) => {
-				if(err){
-					throw err
+			try{
+				const artifact = compileFile(filename);
+				const artifactJSON = JSON.stringify(artifact, null, 2);
+				filename = filename.split('.').slice(0, -1).join('.') + ".json"
+				
+				fs.writeFile(filename, artifactJSON, (err) => {
+					if(err){
+						throw err
+					}
+				});
+
+				const script = asmToScript(artifact.bytecode);
+				const opcount = countOpcodes(script);
+				const bytesize = calculateBytesize(script);
+
+				if(opcount > 201){
+					vscode.window.showWarningMessage('Warning: Your contract\'s opcount is over the limit of 201 and will not be accepted by the BCH network');
 				}
-			})
-			console.log(`Compiled contact to ${filename}`);
+
+				if(bytesize > 520){
+					vscode.window.showWarningMessage('Warning: Your contract\'s bytesize is over the limit of 520 and will not be accepted by the BCH network');
+				}
+
+				vscode.window.showInformationMessage(`Compiled contract to artifact '${path.basename(filename)}'`); //  '${bytesize}' bytes`);
+				console.log(`Compiled contact to ${filename}`);
+			}catch(e){
+				//vscode.window.showErrorMessage(""+e);
+				vscode.window.showErrorMessage(`Unable to compile '${path.basename(filename)}', ` + e);
+			}
+
 		}
+		
 		context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
 	}
 
