@@ -88,7 +88,13 @@
 				"scopeName": "source.cash",
 				"path": "./syntaxes/cash.tmGrammar.json"
 			}
-		] 
+		],
+		"keybindings":[
+			{
+				"command": "cashscript.compileContract",
+				"key": "ctrl+f5"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
