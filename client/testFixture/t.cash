@@ -5,4 +5,7 @@ contract ContractName() {
         require(true);
     }
 
+    function nameTest(int name) {
+        require(name == 2);
+    }
 }

@@ -18,7 +18,7 @@ import {
 } from 'vscode-languageserver/node';
 
 import {TextDocument} from 'vscode-languageserver-textdocument';
-import CompletionService from './CompletionService';
+import CompletionService from './completionService';
 import CompilerErrors from './compilerErrors';
 
 // Create a connection for the server, using Node's IPC as a transport.
