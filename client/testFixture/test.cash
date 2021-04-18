@@ -1,19 +1,16 @@
-pragma cashscript ^0.5.7;
+pragma cashscript ^0.6.0;
 
 contract TransferWithTimeout(pubkey sender, pubkey recipient, int timeout) {
     // Require recipient's signature to match
     function transfer(sig recipientSig) {
 
-        
-        
-
         if (1 == 1){
-            require(true)l;
+            require(true);
         }else{
             require(false);
         }
 
-       
+        
         bytes34 out1 = new OutputP2PKH(bytes8(10000), pkh);
         bytes32 out2 = new OutputP2SH(bytes8(10000), hash160(tx.bytecode));
         require(hash256(out1 + out2) == tx.hashOutputs);

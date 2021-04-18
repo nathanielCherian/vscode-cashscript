@@ -1,7 +1,3 @@
-/* --------------------------------------------------------------------------------------------
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
 import {
 	createConnection,
 	TextDocuments,
@@ -58,7 +54,7 @@ connection.onInitialize((params: InitializeParams) => {
 			// Tell the client that this server supports code completion.
 			completionProvider: {
 				resolveProvider: true
-			}
+			},
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -223,6 +219,13 @@ connection.onCompletion(
 		return cs.getAllCompletions();
 	}
 );
+
+
+// connection.onHover(
+// 	() => {
+		
+// 	}
+// )
 
 // This handler resolves additional information for the item selected in
 // the completion list.

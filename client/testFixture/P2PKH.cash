@@ -24,4 +24,5 @@ contract P2PKH(bytes20 pkh) {
         require(checkSig(s, pk));
         require(checkSig(s, pk));
     }
+
 }

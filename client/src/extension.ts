@@ -5,7 +5,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, HoverProvider } from 'vscode';
 import {compileFile} from 'cashc';
 import {
 	asmToScript,
@@ -23,9 +23,16 @@ import {
 	TransportKind
 } from 'vscode-languageclient/node';
 
+import SignatureCompleter from './SignatureCompleter';
+
 const fs = require('fs');
 
 let client: LanguageClient;
+
+//Debug channel
+const outputChannel = vscode.window.createOutputChannel('VSCODE-CASHSCRIPT DEBUG')
+outputChannel.appendLine("This is a test");
+outputChannel.show();
 
 export function activate(context: ExtensionContext) {
 	// The server is implemented in node
@@ -109,26 +116,15 @@ export function activate(context: ExtensionContext) {
 
 	registerCompileCommand();
 
-	/*
-	const command = 'cashscript.sayHello';
-	const commandHandler = (name:string = 'world') => {
-		var filename = vscode.window.activeTextEditor.document.fileName;
-		const artifactJSON = JSON.stringify(compileFile(filename), null, 2);
-		filename = filename.split('.').slice(0, -1).join('.') + ".json"
-		console.log(filename);
-		fs.writeFile(filename, artifactJSON, (err) => {
-			if(err){
-				throw err
-			}
-		})
 
-		console.log(`Hello ${name}!!!`);
-	};
-	context.subscriptions.push(vscode.commands.registerCommand(command, commandHandler));
-	*/
+	vscode.languages.registerHoverProvider('cashscript', {
+		provideHover(document, position, token){
+			outputChannel.appendLine("hover " + document);
+			return new vscode.Hover(['content on hover'])
+		}
+	  });
 
-
-
+	vscode.languages.registerSignatureHelpProvider('cashscript', new SignatureCompleter(), '(');
 
 	// Start the client. This will also launch the server
 	client.start();
