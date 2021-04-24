@@ -19,11 +19,13 @@ import {
 import {
 	LanguageClient,
 	LanguageClientOptions,
+	MarkedString,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
 
 import SignatureCompleter from './SignatureCompleter';
+import CashscriptHoverProvider from './CashscriptHoverProvider';
 
 const fs = require('fs');
 
@@ -117,12 +119,8 @@ export function activate(context: ExtensionContext) {
 	registerCompileCommand();
 
 
-	vscode.languages.registerHoverProvider('cashscript', {
-		provideHover(document, position, token){
-			outputChannel.appendLine("hover " + document);
-			return new vscode.Hover(['content on hover'])
-		}
-	  });
+	vscode.languages.registerHoverProvider('cashscript', new CashscriptHoverProvider(outputChannel));	
+
 
 	vscode.languages.registerSignatureHelpProvider('cashscript', new SignatureCompleter(), '(');
 
