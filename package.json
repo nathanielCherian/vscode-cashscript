@@ -8,7 +8,9 @@
 		"type": "git",
 		"url": "https://github.com/nathanielCherian/vscode-cashscript"
 	},
-	"categories": ["Snippets"],
+	"categories": [
+		"Snippets"
+	],
 	"keywords": [
 		"multi-root ready"
 	],
@@ -44,38 +46,38 @@
 				}
 			}
 		},
-		"menus":{
-			"editor/title":[
+		"menus": {
+			"editor/title": [
 				{
-					"when":"resourceLangId == cashscript",
-					"command":"cashscript.compileContract",
+					"when": "resourceLangId == cashscript",
+					"command": "cashscript.compileContract",
 					"group": "navigation"
 				}
 			]
 		},
 		"languages": [
 			{
-			  "id": "cashscript",
-			  "aliases": [
-				"Cashscript",
-				"cashscript"
-			  ],
-			  "extensions": [
-				".cash"
-			  ],
-			  "configuration": "./cashscript.configuration.json"
+				"id": "cashscript",
+				"aliases": [
+					"Cashscript",
+					"cashscript"
+				],
+				"extensions": [
+					".cash"
+				],
+				"configuration": "./cashscript.configuration.json"
 			}
-		  ],
-		  "commands":[
-			  {
-				  "command":"cashscript.compileContract",
-				  "title":"Compile Contract"
-			  },
-			  {
-				  "command": "cashscript.sayHello",
-				  "title":"Say Hello"
-			  }
-		  ],
+		],
+		"commands": [
+			{
+				"command": "cashscript.compileContract",
+				"title": "Compile Contract"
+			},
+			{
+				"command": "cashscript.sayHello",
+				"title": "Say Hello"
+			}
+		],
 		"snippets": [
 			{
 				"language": "cashscript",
@@ -88,12 +90,15 @@
 				"scopeName": "source.cash",
 				"path": "./syntaxes/cash.tmGrammar.json"
 			}
+<<<<<<< HEAD
+=======
 		],
 		"keybindings":[
 			{
 				"command": "cashscript.compileContract",
 				"key": "ctrl+f5"
 			}
+>>>>>>> 5417aa5df73e1f0b6072b3c6cf4eadeaa28a81a2
 		]
 	},
 	"scripts": {
