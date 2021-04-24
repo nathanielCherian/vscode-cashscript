@@ -13,7 +13,7 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 
 		let range = document.getWordRangeAtPosition(position, this.re);
 		let word = document.getText(range);
-		if(word.includes("\n")) // Stop multi-line bug
+		if(word.includes("\n")) // Stop multi-line bug // get rid of this whole thing
 			return null;
 
 		this.channel.appendLine("hover: "+word)
@@ -26,7 +26,6 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		const annotations = this.HOVER_DATA[word];
 		if(annotations)
 			return annotations.map(str => new vscode.MarkdownString(str));
-
 		
 		return null;
 	}

@@ -24,7 +24,7 @@ import {
 	TransportKind
 } from 'vscode-languageclient/node';
 
-import SignatureCompleter from './SignatureCompleter';
+import CashscriptSignatureCompleter from './CashscriptSignatureCompleter';
 import CashscriptHoverProvider from './CashscriptHoverProvider';
 
 const fs = require('fs');
@@ -118,11 +118,9 @@ export function activate(context: ExtensionContext) {
 
 	registerCompileCommand();
 
-
+	
 	vscode.languages.registerHoverProvider('cashscript', new CashscriptHoverProvider(outputChannel));	
-
-
-	vscode.languages.registerSignatureHelpProvider('cashscript', new SignatureCompleter(), '(');
+	vscode.languages.registerSignatureHelpProvider('cashscript', new CashscriptSignatureCompleter(outputChannel), '(');
 
 	// Start the client. This will also launch the server
 	client.start();

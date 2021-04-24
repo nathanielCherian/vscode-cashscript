@@ -1,7 +1,8 @@
 # vscode-cashscript 
 
 ## TODO
-- [ ] Snippets
-- [ ] Code Completion
+- [ x ] Snippets
+- [ x ] Code Completion
 - [ ] Error/type checking
-- [ ] Compile Contract
+- [ x ] Compile Contract
+- [ ] Hover Provider

@@ -90,15 +90,12 @@
 				"scopeName": "source.cash",
 				"path": "./syntaxes/cash.tmGrammar.json"
 			}
-<<<<<<< HEAD
-=======
 		],
 		"keybindings":[
 			{
 				"command": "cashscript.compileContract",
 				"key": "ctrl+f5"
 			}
->>>>>>> 5417aa5df73e1f0b6072b3c6cf4eadeaa28a81a2
 		]
 	},
 	"scripts": {
