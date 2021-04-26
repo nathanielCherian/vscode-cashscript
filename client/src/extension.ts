@@ -122,6 +122,7 @@ export function activate(context: ExtensionContext) {
 	vscode.languages.registerHoverProvider('cashscript', new CashscriptHoverProvider(outputChannel));	
 	vscode.languages.registerSignatureHelpProvider('cashscript', new CashscriptSignatureCompleter(outputChannel), '(');
 
+
 	// Start the client. This will also launch the server
 	client.start();
 }

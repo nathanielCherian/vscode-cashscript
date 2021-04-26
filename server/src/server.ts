@@ -53,7 +53,8 @@ connection.onInitialize((params: InitializeParams) => {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
 			// Tell the client that this server supports code completion.
 			completionProvider: {
-				resolveProvider: true
+				resolveProvider: true,
+				triggerCharacters:[".",]
 			},
 		}
 	};
@@ -153,7 +154,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	let settings = await getDocumentSettings(textDocument.uri);
 
-	console.log("triggered bo");
 	isValidatingFile = false;
 
 	// The validator creates diagnostics for all uppercase words length 2 and more
@@ -216,7 +216,6 @@ connection.onCompletion(
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
-		console.log("completion")
 		const doc: TextDocument|undefined = documents.get(_textDocumentPosition.textDocument.uri);
 		const pos: Position = _textDocumentPosition.position;
 		const cs = new CompletionService(doc, pos);

@@ -1,26 +1,31 @@
-import { CompletionItem, CompletionItemKind, TextDocumentIdentifier, TextDocumentPositionParams } from 'vscode-languageserver';
-import { Position, TextDocument } from 'vscode-languageserver-textdocument';
+import { CompletionItem, CompletionItemKind, Position, Range, TextDocumentIdentifier, TextDocumentPositionParams } from 'vscode-languageserver';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 export default class CompletionService {
 
 	protected currentIndex: number = 0;
-	private lines: string[] = [];
 	private text: string = "";
+	private offset:number = 0;
 	constructor(public doc: TextDocument|undefined, public pos: Position){
-		if(doc){
-			this.text = doc.getText();
-			this.lines = this.text.split(/\r?\n/g);
-		}
+		this.text = doc?.getText() || "";
+		this.offset = doc?.offsetAt(pos) || 0;
 	}
 
 	getAllCompletions(): CompletionItem[]{
+		console.log("completion TRIGG")
 		let completions:CompletionItem[] = [];
+
+		//completions = completions.concat(this.getDotCompletions());
+		//if(completions.length > 0) return completions;
+		if(this.isDot()){
+			return this.getDotCompletions();
+		}
+
 		completions = completions.concat(this.getControlCompletions());
 		completions = completions.concat(this.getGlobalFunctionCompletions());
 		completions = completions.concat(this.getOutputCompletions());
 		completions = completions.concat(this.getTypesCompletions());
 		completions = completions.concat(this.getGlobalConstantsCompletions());
-		completions = completions.concat(this.getDotCompletions());
 
 		return completions;
 	}
@@ -28,26 +33,86 @@ export default class CompletionService {
 	protected getCharRange(begin:number, end:number){
 		return this.text.substring(begin, end);
 	}
+
+	protected isDot():boolean{
+		const offset:number = this.doc?.offsetAt(this.pos) || 0;
+		const t = this.getCharRange(offset-1, offset);
+		if(t === '.') return true;
+		return false;
+	}
 	
+
+	DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
+		tx:[
+			{
+				label:"time",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"age",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"version",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"hashPrevouts",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"hashSequence",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"outpoint",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"bytecode",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"value",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"sequence",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"hashOutputs",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"locktime",
+				kind:CompletionItemKind.Variable
+			},
+			{
+				label:"hashtype",
+				kind:CompletionItemKind.Variable
+			},
+		]
+	}
+
 	protected getDotCompletions():CompletionItem[]{
 
-		return [
-			CompletionItem.create("age")
-		]
-		const re = /tx\./;
-		console.log(this.lines[this.pos.line]);
-		const offset:number = this.doc?.offsetAt(this.pos) || 0;
-		const t = this.getCharRange(offset-3, offset)
-		console.log("dot: ", t);
-		if(t === "tx."){
-			return [
-				CompletionItem.create("age")
-			]
+		const re = /(\w+).$/ // EX: "tx."
+		const range:Range = {
+			start:{character:0, line:this.pos.line},
+			end:this.pos
 		}
-		//console.log(this.doc?.getText().charAt(this.doc?.offsetAt(this.pos)-1));
-		return [
-			CompletionItem.create("tx")
-		]
+		const text = this.doc?.getText(range);
+		var arr, keyword;
+		if((arr=text?.match(re))){
+			keyword = arr[1];
+			console.log("keyword: ", keyword);
+			
+			return this.DOT_COMPLETIONS[keyword];
+		}
+
+
+		return []
 	}
 
 	protected getControlCompletions():CompletionItem[]{
@@ -71,7 +136,7 @@ export default class CompletionService {
 			{
 				label:"abs",
 				detail: 'int abs(int a): Returns the absolute value of argument a.',
-				insertText: 'abs(${1:value});',
+				insertText: 'abs(${1:value})',
 				insertTextFormat: 2,
 			},
 			{
