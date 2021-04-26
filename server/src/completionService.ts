@@ -1,11 +1,16 @@
-import { CompletionItem, CompletionItemKind, TextDocumentPositionParams } from 'vscode-languageserver';
+import { CompletionItem, CompletionItemKind, TextDocumentIdentifier, TextDocumentPositionParams } from 'vscode-languageserver';
+import { Position, TextDocument } from 'vscode-languageserver-textdocument';
 
 export default class CompletionService {
 
 	protected currentIndex: number = 0;
-
-	constructor(textDocumentPosition: TextDocumentPositionParams){
-		
+	private lines: string[] = [];
+	private text: string = "";
+	constructor(public doc: TextDocument|undefined, public pos: Position){
+		if(doc){
+			this.text = doc.getText();
+			this.lines = this.text.split(/\r?\n/g);
+		}
 	}
 
 	getAllCompletions(): CompletionItem[]{
@@ -15,10 +20,35 @@ export default class CompletionService {
 		completions = completions.concat(this.getOutputCompletions());
 		completions = completions.concat(this.getTypesCompletions());
 		completions = completions.concat(this.getGlobalConstantsCompletions());
+		completions = completions.concat(this.getDotCompletions());
 
 		return completions;
 	}
 
+	protected getCharRange(begin:number, end:number){
+		return this.text.substring(begin, end);
+	}
+	
+	protected getDotCompletions():CompletionItem[]{
+
+		return [
+			CompletionItem.create("age")
+		]
+		const re = /tx\./;
+		console.log(this.lines[this.pos.line]);
+		const offset:number = this.doc?.offsetAt(this.pos) || 0;
+		const t = this.getCharRange(offset-3, offset)
+		console.log("dot: ", t);
+		if(t === "tx."){
+			return [
+				CompletionItem.create("age")
+			]
+		}
+		//console.log(this.doc?.getText().charAt(this.doc?.offsetAt(this.pos)-1));
+		return [
+			CompletionItem.create("tx")
+		]
+	}
 
 	protected getControlCompletions():CompletionItem[]{
 		const words = ["pragma", "cashscript", "if", "else", "require"]

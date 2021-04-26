@@ -13,7 +13,7 @@ import {
 	InitializeResult
 } from 'vscode-languageserver/node';
 
-import {TextDocument} from 'vscode-languageserver-textdocument';
+import {Position, TextDocument} from 'vscode-languageserver-textdocument';
 import CompletionService from './completionService';
 import CompilerErrors from './compilerErrors';
 
@@ -159,8 +159,10 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	let text = textDocument.getText();
 
-	CompilerErrors.checkErrors(text);
+	//CompilerErrors.checkErrors(text);
 
+
+	
 	/*
 	let pattern = /\b[A-Z]{2,}\b/g;
 	let m: RegExpExecArray | null;
@@ -214,8 +216,10 @@ connection.onCompletion(
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
-		const doc = documents.get(_textDocumentPosition.textDocument.uri);
-		const cs = new CompletionService(_textDocumentPosition);
+		console.log("completion")
+		const doc: TextDocument|undefined = documents.get(_textDocumentPosition.textDocument.uri);
+		const pos: Position = _textDocumentPosition.position;
+		const cs = new CompletionService(doc, pos);
 		return cs.getAllCompletions();
 	}
 );
