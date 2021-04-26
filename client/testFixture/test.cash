@@ -10,7 +10,6 @@ contract TransferWithTimeout(pubkey sender, pubkey recipient, int timeout) {
             require(false);
         }
 
-        
         bytes34 out1 = new OutputP2PKH(bytes8(10000), pkh);
         bytes32 out2 = new OutputP2SH(bytes8(10000), hash160(tx.bytecode));
         require(hash256(out1 + out2) == tx.hashOutputs);
@@ -18,6 +17,7 @@ contract TransferWithTimeout(pubkey sender, pubkey recipient, int timeout) {
        ; require(checkSig(recipientSig, recipient));
     }
 
+    
 
     // Require timeout time to be reached and sender's signature to match
     function timeout(sig senderSig) {

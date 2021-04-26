@@ -23,10 +23,10 @@
     }
   ],
   "bytecode": "OP_OVER OP_HASH160 OP_EQUALVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_CHECKSIG",
-  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend(pubkey pk, sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n    }\r\n}",
+  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend(pubkey pk, sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n    }\r\n\r\n}",
   "compiler": {
     "name": "cashc",
     "version": "0.6.0"
   },
-  "updatedAt": "2021-04-18T04:25:35.582Z"
+  "updatedAt": "2021-04-26T03:53:34.287Z"
 }

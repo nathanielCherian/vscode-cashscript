@@ -1,21 +1,19 @@
 import * as vscode from 'vscode';
+import { MarkedString } from 'vscode-languageclient';
+import { LANGUAGE } from './LanguageDesc';
 
 class CashscriptHoverProvider implements vscode.HoverProvider{
 
-	HOVER_DATA:{[key:string]:string[]} = {}
 	re = /[a-zA-Z0-9]+/g; // regex to get selected word
-	constructor(private channel: vscode.OutputChannel = null){
-		this.loadHoverData();
-	}
+	constructor(private channel: vscode.OutputChannel = null){}
 
 	provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
 
 
 		let range = document.getWordRangeAtPosition(position, this.re);
 		let word = document.getText(range);
-		if(word.includes("\n")) // Stop multi-line bug // get rid of this whole thing
-			return null;
 
+		
 		this.channel.appendLine("hover: "+word)
 		return new vscode.Hover(this.getHoverAnnotation(word), range);
 	}
@@ -23,23 +21,14 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 
 	getHoverAnnotation(word:string){
 		
-		const annotations = this.HOVER_DATA[word];
-		if(annotations)
-			return annotations.map(str => new vscode.MarkdownString(str));
+		const data = LANGUAGE[word];
+		return [
+			new vscode.MarkdownString().appendCodeblock(data.code),
+			new vscode.MarkdownString(data.codeDesc)
+		]
 		
-		return null;
 	}
 	
-	loadHoverData(){
-		const data = {
-			"abs":[
-				"int abs(int a)",
-				"Returns the absolute value of argument `a`."
-			],
-		}
-
-		this.HOVER_DATA = {...data, ...this.HOVER_DATA};
-	}
 
 }
 
