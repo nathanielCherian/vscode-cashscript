@@ -3,10 +3,6 @@ pragma cashscript ^0.6.0;
 contract ContractName() {
     function test() {
         require(true);
-        
-    }
-
-    function nameTest(int name) {
-        require(name == 2);
+        string x = "asdasd";
     }
 }

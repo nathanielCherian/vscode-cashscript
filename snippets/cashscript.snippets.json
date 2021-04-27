@@ -5,15 +5,10 @@
 		"description":"Set semantic version"
 	},
 
-	"Contract instantiation" : {
-		"prefix": "contract",
-		"body":["contract ${1:ContractName}($2) {\n\n}"],
-		"description":"Instantiate Contract"
-	},
 
-	"Create Function" : {
+	"Function Statement" : {
 		"prefix":"function",
-		"body":"function ${1:functionName}($2) {\n\t$3\n}",
+		"body":"function ${1:functionName}(${2:params}) {\n\t$3\n}",
 		"description":"Create function"
 	},
 

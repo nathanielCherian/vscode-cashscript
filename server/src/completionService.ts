@@ -21,6 +21,7 @@ export default class CompletionService {
 			return this.getDotCompletions();
 		}
 
+		completions = completions.concat(this.getConditionalCompletions());
 		completions = completions.concat(this.getControlCompletions());
 		completions = completions.concat(this.getGlobalFunctionCompletions());
 		completions = completions.concat(this.getOutputCompletions());
@@ -114,6 +115,20 @@ export default class CompletionService {
 
 		return []
 	}
+	
+	protected getConditionalCompletions():CompletionItem[]{
+		const completions:CompletionItem[] = [];
+		if(!this.text.includes("contract")){
+			completions.push({
+				label:"contract",
+				detail:"Instantiate a new Contract",
+				insertText:"contract ${1:ContractName}($2) {\n\n}",
+				insertTextFormat:2
+			});
+		}
+
+		return completions;
+	}
 
 	protected getControlCompletions():CompletionItem[]{
 		const words = ["pragma", "cashscript", "if", "else", "require"]
@@ -132,6 +147,7 @@ export default class CompletionService {
 						"ripemd160", "sha1", "sha256", "hash160","hash256",
 						"checkSig", "checkMultiSig", "checkDataSig"]
 
+		/*
 		const comps: CompletionItem[] = [
 			{
 				label:"abs",
@@ -191,6 +207,69 @@ export default class CompletionService {
 				label:"checkDataSig",
 				detail:"bool checkDataSig(datasig s, bytes msg, pubkey pk): Checks that sig `s` is a valid signature for message `msg` and matches with public key `pk`.",
 				insertText:"checkDataSig(${1:signature}, ${2:message}, ${3:pubkey})",
+				insertTextFormat:2
+			}
+		]*/
+
+		const comps: CompletionItem[] = [
+			{
+				label:"abs",
+				detail: 'int abs(int a): Returns the absolute value of argument a.',
+				insertText: 'abs',
+				insertTextFormat: 2,
+			},
+			{
+				label:"min",
+				detail:"int min(int a, int b): Returns the minimum value of arguments `a` and `b`.",
+				insertText:"min",
+				insertTextFormat:2
+			},
+			{
+				label:"max",
+				detail:"int max(int a, int b): Returns the maximum value of arguments `a` and `b`.",
+				insertText:"max",
+				insertTextFormat:2
+			},
+			{
+				label:"within",
+				detail:"bool within(int x, int lower, int upper): Returns `true` if and only if `x >= lower && x < upper`.",
+				insertText:"within",
+				insertTextFormat:2
+			},
+			{
+				label:"ripemd160",
+				detail:"bytes20 ripemd160(any x): Returns the SHA-1 hash of argument `x`.",
+				insertText:"ripemd160",
+				insertTextFormat:2
+			},
+			{
+				label:"sha256",
+				detail:"bytes32 sha256(any x): Returns the SHA-256 hash of argument `x`.",
+				insertText:"sha256",
+				insertTextFormat:2
+			},
+			{
+				label:"hash160",
+				detail:"bytes20 hash160(any x): Returns the RIPEMD-160 hash of the SHA-256 hash of argument `x`.",
+				insertText:"hash160",
+				insertTextFormat:2
+			},
+			{
+				label:"hash256",
+				detail:"bytes32 hash256(any x): bytes32 hash256(any x)",
+				insertText:"hash256",
+				insertTextFormat:2
+			},
+			{
+				label:"checkMultiSig",
+				detail:"bool checkMultiSig(sig[] sigs, pubkey[] pks): Performs a multi-signature check using a list of transaction signatures and public keys.",
+				insertText:"checkMultiSig",
+				insertTextFormat:2
+			},
+			{
+				label:"checkDataSig",
+				detail:"bool checkDataSig(datasig s, bytes msg, pubkey pk): Checks that sig `s` is a valid signature for message `msg` and matches with public key `pk`.",
+				insertText:"checkDataSig",
 				insertTextFormat:2
 			}
 		]

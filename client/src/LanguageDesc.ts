@@ -75,8 +75,14 @@ let OUTPUT_INSTANTIATION:Data = {
 	},
 }
 
+let STATEMENTS:Data = {
+	require:{
+		code:'null require( exp )',
+		codeDesc:"Takes a boolean expression, if it evaluates to 'false' the contract fails. Used to ensure requirements"
+	}
+}
 
 
-let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION};
+let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION, ...STATEMENTS};
 
 export { GLOBAL_FUNCTIONS, OUTPUT_INSTANTIATION, LANGUAGE };

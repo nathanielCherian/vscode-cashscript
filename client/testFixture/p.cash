@@ -1,0 +1,9 @@
+pragma cashscript ^0.5.6;
+
+contract MyContract() {
+    
+    function myFunction(int num) {
+        
+    }
+
+}

@@ -5,24 +5,6 @@ contract P2PKH(bytes20 pkh) {
         require(hash160(pk) == pkh);
         require(checkSig(s, pk));
         require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
-        require(checkSig(s, pk));
     }
 
 }
