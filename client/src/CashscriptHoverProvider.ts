@@ -38,7 +38,7 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 
 	getMiscellaneousHovers(document:vscode.TextDocument, position:vscode.Position):vscode.MarkdownString[]{
 
-		const reg = /(contract|function) (\w+)/;
+		const reg = /(contract|function)\s+(\w+)\s*\(.*\)/;
 		let range = document.getWordRangeAtPosition(position, reg);
 		let word = document.getText(range);
 		if(word.includes("\n")) return null;

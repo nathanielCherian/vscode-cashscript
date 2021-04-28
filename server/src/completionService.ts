@@ -11,6 +11,8 @@ export default class CompletionService {
 		this.offset = doc?.offsetAt(pos) || 0;
 	}
 
+
+
 	getAllCompletions(): CompletionItem[]{
 		console.log("completion TRIGG")
 		let completions:CompletionItem[] = [];
