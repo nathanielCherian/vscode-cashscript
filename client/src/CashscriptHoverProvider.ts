@@ -17,10 +17,13 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		const annotation = this.getHoverAnnotation(word);
 		if(annotation) return new vscode.Hover(annotation, range);
 
+		const miscel = this.getMiscellaneousHovers(document, position);
+		if(miscel) return new vscode.Hover(miscel, range)
 
 		// check special words
 
-		return new vscode.Hover(this.getMiscellaneousHovers(document, position), range);
+		const varTypes = this.getVariableTypes(document, word);
+		return new vscode.Hover(varTypes, range);
 	}
 
 
@@ -47,7 +50,17 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 			new vscode.MarkdownString().appendCodeblock(word)
 		];
 	}
-	
+
+	getVariableTypes(document:vscode.TextDocument, targetWord:string):vscode.MarkdownString[]{
+		const reg = /([a-zA-Z0-9]+)\s+(pk)[^a-zA-Z0-9]/;
+		const text = document.getText();
+		const matches = text.match(new RegExp(`([a-zA-Z0-9]+)\\s+(${targetWord})[^a-zA-Z0-9]`));
+		if(!matches) return null;
+
+		return [
+			new vscode.MarkdownString().appendCodeblock(`${matches[1]} ${matches[2]}`),
+		]
+	}
 
 }
 
