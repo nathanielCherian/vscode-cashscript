@@ -54,7 +54,7 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 	getVariableTypes(document:vscode.TextDocument, targetWord:string):vscode.MarkdownString[]{
 		const reg = /([a-zA-Z0-9]+)\s+(pk)[^a-zA-Z0-9]/;
 		const text = document.getText();
-		const matches = text.match(new RegExp(`([a-zA-Z0-9]+)\\s+(${targetWord})[^a-zA-Z0-9]`));
+		const matches = text.match(new RegExp(`([a-zA-Z0-9]+)\\s+(${targetWord})[^a-zA-Z0-9]`)); //regex still incomplete
 		if(!matches) return null;
 
 		return [
