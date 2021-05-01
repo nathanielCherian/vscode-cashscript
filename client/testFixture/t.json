@@ -3,16 +3,16 @@
   "constructorInputs": [],
   "abi": [
     {
-      "name": "test",
+      "name": "n",
       "covenant": false,
       "inputs": []
     }
   ],
   "bytecode": "OP_1",
-  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract ContractName() {\r\n    function test() {\r\n        require(true);\r\n    }\r\n}\r\n",
+  "source": "\r\ncontract ContractName() {\r\n    function n() {\r\n        require(true);\r\n    }\r\n}",
   "compiler": {
     "name": "cashc",
     "version": "0.6.0"
   },
-  "updatedAt": "2021-04-27T15:14:39.459Z"
+  "updatedAt": "2021-05-01T22:11:55.032Z"
 }
