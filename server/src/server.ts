@@ -15,7 +15,6 @@ import {
 
 import {Position, TextDocument} from 'vscode-languageserver-textdocument';
 import CompletionService from './completionService';
-import CompilerErrors from './compilerErrors';
 import CashLinter from './CashLinter/CashLinter';
 
 // Create a connection for the server, using Node's IPC as a transport.
@@ -132,12 +131,6 @@ documents.onDidClose(e => {
 });
 
 
-function validate(doc:TextDocument){
-	console.log("VALIDATE")
-	isValidatingFile = false;
-}
-
-
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
@@ -147,14 +140,6 @@ documents.onDidChangeContent(change => {
 		setTimeout(() => validateTextDocument(change.document), validationDelay);
 	}
 
-	// validateTextDocument(change.document);
-	// console.log("CHANGE")
-	// if(!isValidatingFile){
-	// 	isValidatingFile = true;
-	// 	setTimeout(() => validateTextDocument(change.document), validationDelay);
-	// }
-	
-	//validateTextDocument(change.document);
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {

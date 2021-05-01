@@ -12,6 +12,7 @@
 		"url": "https://github.com/nathanielCherian/vscode-cashscript"
 	},
 	"dependencies": {
+		"@cashscript/utils": "^0.6.3",
 		"antlr4ts": "^0.5.0-alpha.4",
 		"cashscript": "^0.5.7",
 		"net": "^1.0.2",
