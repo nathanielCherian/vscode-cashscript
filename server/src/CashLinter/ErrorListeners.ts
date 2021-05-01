@@ -1,14 +1,14 @@
-import { ANTLRErrorListener, RecognitionException, Recognizer } from 'antlr4ts';
+import { ANTLRErrorListener, DefaultErrorStrategy, Parser, RecognitionException, Recognizer } from 'antlr4ts';
 import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver';
 
 export class SafeErrorListener implements ANTLRErrorListener<any> {
-  
+    static readonly INSTANCE = new SafeErrorListener();
+
 	errs:Diagnostic[] = []
   
 	getErrs():Diagnostic[]{
 	  return this.errs;
 	}
-  
   
 	syntaxError<T>(
 	  recognizer: Recognizer<T, any>,
@@ -20,7 +20,7 @@ export class SafeErrorListener implements ANTLRErrorListener<any> {
 	): void {
 	  const capitalisedMessage = message.charAt(0).toUpperCase() + message.slice(1);
 
-	 console.log(capitalisedMessage);
+	//console.log(capitalisedMessage);
 	  const range:Range = {
 		  start:{
 			  line:line-1,
@@ -32,10 +32,14 @@ export class SafeErrorListener implements ANTLRErrorListener<any> {
 		  }
 	  }
 
-	  console.log(range)
 	  const diag = Diagnostic.create(range, capitalisedMessage, DiagnosticSeverity.Error)
 	  this.errs.push(diag);
-	  //console.log(capitalisedMessage);
 	}
+	
   }
-  
+
+export class SafeErrorStrategy extends DefaultErrorStrategy{
+	sync(recognizer: Parser): void {
+		return
+	}
+}

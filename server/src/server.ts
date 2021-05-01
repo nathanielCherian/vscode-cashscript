@@ -30,7 +30,7 @@ let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
 
 let isValidatingFile: boolean = false;
-let validationDelay: number = 1500;
+let validationDelay: number = 750;
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -141,8 +141,13 @@ function validate(doc:TextDocument){
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
+	
+	if(!isValidatingFile){
+		isValidatingFile = true;
+		setTimeout(() => validateTextDocument(change.document), validationDelay);
+	}
 
-	validateTextDocument(change.document);
+	// validateTextDocument(change.document);
 	// console.log("CHANGE")
 	// if(!isValidatingFile){
 	// 	isValidatingFile = true;
@@ -157,6 +162,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	let settings = await getDocumentSettings(textDocument.uri);
 	isValidatingFile = false;
 
+	console.log("validate...")
 	const code = textDocument.getText();
 	const diagnostics = CashLinter.getDiagnostics(code);
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
