@@ -82,7 +82,13 @@ let STATEMENTS:Data = {
 	}
 }
 
+let TYPECASTS:Data = {
+	int:{
+		code:"int int( v )",
+		codeDesc:"Converts to int"
+	}
+}
 
 let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION, ...STATEMENTS};
 
-export { GLOBAL_FUNCTIONS, OUTPUT_INSTANTIATION, LANGUAGE };
+export { GLOBAL_FUNCTIONS, OUTPUT_INSTANTIATION, TYPECASTS, LANGUAGE };

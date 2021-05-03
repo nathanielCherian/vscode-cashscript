@@ -22,7 +22,7 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 
 		// check special words
 
-		const varTypes = this.getVariableTypes(document, word);
+		const varTypes = this.getVariableTypes(document, word); // fix this
 		return new vscode.Hover(varTypes, range);
 	}
 
@@ -51,6 +51,9 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		];
 	}
 
+	/*
+	* Very bad way to get type annotations, better option: custom linter
+	*/
 	getVariableTypes(document:vscode.TextDocument, targetWord:string):vscode.MarkdownString[]{
 		const reg = /([a-zA-Z0-9]+)\s+(pk)[^a-zA-Z0-9]/;
 		const text = document.getText();

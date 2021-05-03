@@ -1,8 +1,9 @@
 pragma cashscript ^0.6.0;
 
 contract ContractName() {
-    function test() {
-        require(true);
+    function test(pubkey pk) {
+        
+        require(hash160(pk) = true);
         string x = "asdasd";
     }
 }
