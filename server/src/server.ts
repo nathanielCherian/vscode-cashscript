@@ -16,6 +16,7 @@ import {
 import {Position, TextDocument} from 'vscode-languageserver-textdocument';
 import CompletionService from './completionService';
 import CompilerErrors from './compilerErrors';
+import CashLinter from './CashLinter/CashLinter';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -29,7 +30,7 @@ let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
 
 let isValidatingFile: boolean = false;
-let validationDelay: number = 1500;
+let validationDelay: number = 750;
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -141,11 +142,17 @@ function validate(doc:TextDocument){
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
 	
-	console.log("CHANGE")
 	if(!isValidatingFile){
 		isValidatingFile = true;
 		setTimeout(() => validateTextDocument(change.document), validationDelay);
 	}
+
+	// validateTextDocument(change.document);
+	// console.log("CHANGE")
+	// if(!isValidatingFile){
+	// 	isValidatingFile = true;
+	// 	setTimeout(() => validateTextDocument(change.document), validationDelay);
+	// }
 	
 	//validateTextDocument(change.document);
 });
@@ -153,11 +160,15 @@ documents.onDidChangeContent(change => {
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	let settings = await getDocumentSettings(textDocument.uri);
-
 	isValidatingFile = false;
 
+	console.log("validate...")
+	const code = textDocument.getText();
+	const diagnostics = CashLinter.getDiagnostics(code);
+	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+
 	// The validator creates diagnostics for all uppercase words length 2 and more
-	let text = textDocument.getText();
+	// let text = textDocument.getText();
 
 	//CompilerErrors.checkErrors(text);
 

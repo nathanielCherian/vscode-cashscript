@@ -22,11 +22,11 @@
       ]
     }
   ],
-  "bytecode": "OP_OVER OP_HASH160 OP_EQUALVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_CHECKSIG",
-  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend(pubkey pk, sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n    }\r\n\r\n}",
+  "bytecode": "OP_OVER OP_HASH160 OP_EQUALVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_CHECKSIG",
+  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend( pubkey pk  , sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n    }\r\n\r\n}\r\n",
   "compiler": {
     "name": "cashc",
     "version": "0.6.0"
   },
-  "updatedAt": "2021-04-27T15:13:57.815Z"
+  "updatedAt": "2021-05-01T22:10:47.753Z"
 }
