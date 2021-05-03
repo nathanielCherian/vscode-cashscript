@@ -23,6 +23,7 @@ export default class CompletionService {
 			return this.getDotCompletions();
 		}
 
+		completions = completions.concat(this.getVarCompletions());
 		completions = completions.concat(this.getConditionalCompletions());
 		completions = completions.concat(this.getControlCompletions());
 		completions = completions.concat(this.getGlobalFunctionCompletions());
@@ -114,10 +115,23 @@ export default class CompletionService {
 			return this.DOT_COMPLETIONS[keyword];
 		}
 
-
 		return []
 	}
-	
+
+	protected getVarCompletions():CompletionItem[]{
+
+		const re = /(int|bool|string|pubkey|sig|datasig|bytes)\s+(\w+)/g;
+		const completions:CompletionItem[] = [];
+		for(const m of this.text.matchAll(re)){
+			completions.push({
+				label:m[2],
+				kind:CompletionItemKind.Variable
+			});
+		}
+
+		return completions;
+	}
+
 	protected getConditionalCompletions():CompletionItem[]{
 		const completions:CompletionItem[] = [];
 		if(!this.text.includes("contract")){
@@ -296,7 +310,7 @@ export default class CompletionService {
 	}
 
 	protected getTypesCompletions():CompletionItem[]{
-		const words = ["int", "bool", "string", "bytes", "pubkey", "sig", "datasig", "true", "false"]
+		const words = ["int", "bool", "string", "bytes", "pubkey", "sig", "datasig", "true", "false", "date"]
 		const completions = [];
 		for (let i = 0; i < words.length; i++) {
 			this.currentIndex += 1;

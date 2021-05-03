@@ -86,7 +86,24 @@ let TYPECASTS:Data = {
 	int:{
 		code:"int int( v )",
 		codeDesc:"Converts to int"
+	},
+	string:{
+		code:"string string( v )",
+		codeDesc:"Converts to string"
+	},
+	bytes:{
+		code:"bytes bytes( v )",
+		codeDesc:"Converts to bytes"
+	},
+	bool:{
+		code:"bool bool( v )",
+		codeDesc:"Converts to bool"
+	},
+	date:{
+		code:"int date(\" YYYY-MM-DDThh:mm:ss \")",
+		codeDesc:"Converts implicit date to timestamp"
 	}
+
 }
 
 let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION, ...STATEMENTS};

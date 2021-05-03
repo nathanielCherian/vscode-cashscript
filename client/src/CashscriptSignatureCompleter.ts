@@ -15,8 +15,6 @@ class CashscriptSignatureCompleter implements vscode.SignatureHelpProvider{
 		const sh = new vscode.SignatureHelp();
 		const data = LANGUAGE[word] || TYPECASTS[word];
 		sh.signatures = [new vscode.SignatureInformation(data.codeDesc, new vscode.MarkdownString().appendCodeblock(data.code))];
-		//sh.signatures = this.SIG_DATA[word]; data
-		//sh.signatures = [new vscode.SignatureInformation("param here", "documentation here")]
 		return sh;	
 	}
 
