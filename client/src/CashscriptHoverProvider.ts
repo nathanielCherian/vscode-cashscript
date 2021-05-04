@@ -22,8 +22,13 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 
 		// check special words
 
+		const dotHovers = this.getTxDotHovers(document, position);
+		if(dotHovers) return new vscode.Hover(dotHovers, range)
+
 		const varTypes = this.getVariableTypes(document, word); // fix this
-		return new vscode.Hover(varTypes, range);
+		if(varTypes) return new vscode.Hover(varTypes, range);
+
+		return null;
 	}
 
 
@@ -63,6 +68,58 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		return [
 			new vscode.MarkdownString().appendCodeblock(`${matches[1]} ${matches[2]}`),
 		]
+	}
+
+	getTxDotHovers(document:vscode.TextDocument, position:vscode.Position):vscode.MarkdownString[]{
+		const reg = /tx.[a-zA-Z0-9]+/;
+		let range = document.getWordRangeAtPosition(position, reg);
+		let word = document.getText(range).substring(3);
+
+		// /### tx.(\w+)\n+```solidity\n(.+)\n```/
+		const TX_HOVERS = {
+			time:{
+				code:'require(tx.time >= <expression>);'
+			},
+			age:{
+					code:'require(tx.age >= <expression>);'
+			},
+			version:{
+					code:'bytes4 tx.version'
+			},
+			hashPrevouts:{
+					code:'bytes32 tx.hashPrevouts'
+			},
+			hashSequence:{
+					code:'bytes32 tx.hashSequence'
+			},
+			outpoint:{
+					code:'bytes36 tx.outpoint'
+			},
+			bytecode:{
+					code:'bytes tx.bytecode'
+			},
+			value:{
+					code:'bytes8 value'
+			},
+			sequence:{
+					code:'bytes4 tx.sequence'
+			},
+			hashOutputs:{
+					code:'bytes32 tx.hashOutputs'
+			},
+			locktime:{
+				code:'bytes4 tx.locktime'
+			},
+			hashtype:{
+				code:'bytes4 tx.hashtype'
+			},
+		}
+
+
+		this.channel.appendLine("dot: "+word);
+		return [
+			new vscode.MarkdownString().appendCodeblock(TX_HOVERS[word].code)
+		];
 	}
 
 }

@@ -50,51 +50,51 @@ export default class CompletionService {
 		tx:[
 			{
 				label:"time",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field,
 			},
 			{
 				label:"age",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"version",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"hashPrevouts",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"hashSequence",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"outpoint",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"bytecode",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"value",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"sequence",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"hashOutputs",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"locktime",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 			{
 				label:"hashtype",
-				kind:CompletionItemKind.Variable
+				kind:CompletionItemKind.Field
 			},
 		]
 	}
