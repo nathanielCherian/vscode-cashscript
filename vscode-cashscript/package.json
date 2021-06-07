@@ -1,0 +1,31 @@
+{
+    "name": "vscode-cashscript",
+    "displayName": "vscode-cashscript",
+    "description": "Language extension for cashscript",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.46.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "cashscript",
+            "aliases": ["Cashscript", "cashscript"],
+            "extensions": [".cash"],
+            "configuration": "./cashscript.configuration.json"
+        }],
+        "grammars": [{
+            "language": "cashscript",
+            "scopeName": "source.cash",
+            "path": "./syntaxes/cashscript.tmLanguage.json"
+        }],
+        "snippets": [
+            {
+                "language": "cashscript",
+                "path": "./snippets/cashscript.snippets.json"
+            }
+        ]
+    }
+}
