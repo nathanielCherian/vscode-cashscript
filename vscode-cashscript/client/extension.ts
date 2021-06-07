@@ -1,20 +1,30 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { ExtensionContext, workspace } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext){
 
 
-    // Initialize Server
+    // Initialize Server Options
     const serverModule = path.join(__dirname, 'server.js');
     let serverOptions: ServerOptions = {
-        RUN:{MODULE}
+        debug:{
+            module:serverModule,
+            options:{
+                execArgv: ['--nolazy', '--inspect=6069']
+            },
+            transport:TransportKind.ipc
+        },
+        run:{
+            module:serverModule,
+            transport: TransportKind.ipc
+        }
     }
 
-    // Initialize Client
+    // Initialize Client Options
     let clientOptions: LanguageClientOptions = {
         documentSelector: [{scheme:'file', language:'cashscript'}],
         synchronize: {
