@@ -1,4 +1,4 @@
-# vscode-cashscript README
+# vscode-cashscript =
 
 This is the README for your extension "vscode-cashscript". After writing up a brief description, we recommend including the following sections.
 
