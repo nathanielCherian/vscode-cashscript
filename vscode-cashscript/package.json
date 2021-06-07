@@ -9,23 +9,37 @@
     "categories": [
         "Programming Languages"
     ],
+    "main": "./client/out/extension",
     "contributes": {
-        "languages": [{
-            "id": "cashscript",
-            "aliases": ["Cashscript", "cashscript"],
-            "extensions": [".cash"],
-            "configuration": "./cashscript.configuration.json"
-        }],
-        "grammars": [{
-            "language": "cashscript",
-            "scopeName": "source.cash",
-            "path": "./syntaxes/cashscript.tmLanguage.json"
-        }],
+        "languages": [
+            {
+                "id": "cashscript",
+                "aliases": [
+                    "Cashscript",
+                    "cashscript"
+                ],
+                "extensions": [
+                    ".cash"
+                ],
+                "configuration": "./cashscript.configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "cashscript",
+                "scopeName": "source.cash",
+                "path": "./syntaxes/cashscript.tmLanguage.json"
+            }
+        ],
         "snippets": [
             {
                 "language": "cashscript",
                 "path": "./snippets/cashscript.snippets.json"
             }
         ]
+    },
+    "dependencies": {
+        "vscode": "^1.1.37",
+        "vscode-languageclient": "^7.0.0"
     }
 }
