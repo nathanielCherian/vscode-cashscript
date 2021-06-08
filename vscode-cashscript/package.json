@@ -4,7 +4,7 @@
     "description": "Language extension for cashscript",
     "version": "0.0.1",
     "engines": {
-        "vscode": "^1.46.0"
+        "vscode": "^1.50.1"
     },
     "categories": [
         "Programming Languages"
@@ -48,7 +48,6 @@
         ]
     },
     "dependencies": {
-        "@types/vscode": "^1.56.0",
         "vscode": "^1.1.37",
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",

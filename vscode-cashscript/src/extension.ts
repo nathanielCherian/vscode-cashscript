@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 import { ExtensionContext, workspace } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import CashscriptHoverProvider from './CashscriptHoverProvider';
+import CashscriptSignatureCompleter from './CashscriptSignatureCompleter';
+import CashscriptCompletionProvider from './CashscriptCompletionProvider';
 
 let client: LanguageClient;
 
@@ -47,7 +49,8 @@ export function activate(context: ExtensionContext){
     // Subscribe to events here
 
     vscode.languages.registerHoverProvider('cashscript', new CashscriptHoverProvider())
-
+	vscode.languages.registerSignatureHelpProvider('cashscript', new CashscriptSignatureCompleter(), '(');
+    vscode.languages.registerCompletionItemProvider('cashscript', new CashscriptCompletionProvider(), '.')
 
     client.start();
 }
