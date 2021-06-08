@@ -50,7 +50,7 @@ export function activate(context: ExtensionContext){
 
     vscode.languages.registerHoverProvider('cashscript', new CashscriptHoverProvider())
 	vscode.languages.registerSignatureHelpProvider('cashscript', new CashscriptSignatureCompleter(), '(');
-    vscode.languages.registerCompletionItemProvider('cashscript', new CashscriptCompletionProvider(), '.')
+    vscode.languages.registerCompletionItemProvider('cashscript', new CashscriptCompletionProvider(), '.');
 
     client.start();
 }
