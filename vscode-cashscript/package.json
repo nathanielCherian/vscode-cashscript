@@ -9,7 +9,16 @@
     "categories": [
         "Programming Languages"
     ],
-    "main": "./client/out/extension",
+    "activationEvents": [
+        "onLanguage:cashscript"
+    ],
+    "main": "./out/src/extension",
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "prepare": "node ./node_modules/vscode/bin/install"
+    },
     "contributes": {
         "languages": [
             {
@@ -39,7 +48,10 @@
         ]
     },
     "dependencies": {
+        "@types/vscode": "^1.56.0",
         "vscode": "^1.1.37",
-        "vscode-languageclient": "^7.0.0"
+        "vscode-languageclient": "^7.0.0",
+        "vscode-languageserver": "^7.0.0",
+        "vscode-languageserver-textdocument": "^1.0.1"
     }
 }
