@@ -23,10 +23,10 @@
     }
   ],
   "bytecode": "OP_OVER OP_HASH160 OP_EQUALVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_CHECKSIG",
-  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend( pubkey pk  , sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n    }\r\n\r\n}\r\n",
+  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend( pubkey pk  , sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        // int d = 2;\r\n        // require(checkDataSig());\r\n        // require(checkDataSig(s, pk));\r\n    }\r\n\r\n\r\n}\r\n\r\n",
   "compiler": {
     "name": "cashc",
-    "version": "0.6.0"
+    "version": "0.6.3"
   },
-  "updatedAt": "2021-05-01T22:10:47.753Z"
+  "updatedAt": "2021-06-08T21:07:14.555Z"
 }

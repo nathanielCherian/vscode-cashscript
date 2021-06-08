@@ -10,7 +10,8 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onLanguage:cashscript"
+        "onLanguage:cashscript",
+        "onCommand:cashscript.compile"
     ],
     "main": "./out/src/extension",
     "scripts": {
@@ -45,10 +46,33 @@
                 "language": "cashscript",
                 "path": "./snippets/cashscript.snippets.json"
             }
-        ]
+        ],
+        "commands": [
+            {
+				"command": "cashscript.compile",
+				"title": "Compile Contract"
+			}
+        ],
+        "keybindings":[
+			{
+				"command": "cashscript.compile",
+				"key": "ctrl+f5"
+			}
+		],
+        "menus": {
+			"editor/title": [
+				{
+					"when": "resourceLangId == cashscript",
+					"command": "cashscript.compile",
+					"group": "navigation"
+				}
+			]
+		}
     },
     "dependencies": {
         "antlr4ts": "^0.5.0-alpha.4",
+        "cashc": "^0.6.3",
+        "cashscript": "^0.6.3",
         "vscode": "^1.1.37",
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",

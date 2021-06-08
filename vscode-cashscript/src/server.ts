@@ -29,8 +29,6 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 
-
-
 /**
  * On document change
  *  - validate

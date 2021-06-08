@@ -27,7 +27,7 @@
   "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract MyContract() {\r\n    \r\n    function myFunction(int num) {\r\n        require(num == 1);\r\n    }\r\n\r\n    function spend(bool b) {\r\n        require(b == true);\r\n    }\r\n\r\n}",
   "compiler": {
     "name": "cashc",
-    "version": "0.6.0"
+    "version": "0.6.3"
   },
-  "updatedAt": "2021-04-28T15:57:05.356Z"
+  "updatedAt": "2021-06-08T21:07:20.075Z"
 }
