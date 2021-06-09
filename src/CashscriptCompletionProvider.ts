@@ -1,19 +1,27 @@
-import { CompletionItem, CompletionItemKind, Position, Range, TextDocumentIdentifier, TextDocumentPositionParams } from 'vscode-languageserver';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import * as vscode from 'vscode';
+import { Range, CompletionItem, CompletionItemKind } from 'vscode';
 
-export default class CompletionService {
+export default class CashscriptCompletionProvider implements vscode.CompletionItemProvider{
+    
+    text=""
+    offset=0
+    currentIndex = 0;
+    doc:vscode.TextDocument;
+    pos:vscode.Position;
 
-	protected currentIndex: number = 0;
-	private text: string = "";
-	private offset:number = 0;
-	constructor(public doc: TextDocument|undefined, public pos: Position){
-		this.text = doc?.getText() || "";
-		this.offset = doc?.offsetAt(pos) || 0;
-	}
+    provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+        // throw new Error('Method not implemented.');
+        this.doc = document;
+        this.pos = position;
+        this.text = document.getText() || "";
+		this.offset = document.offsetAt(position) || 0;
+        this.currentIndex = 0;
 
+        const completions: CompletionItem[] = this.getAllCompletions();
+        return completions;
+    }
 
-
-	getAllCompletions(): CompletionItem[]{
+    getAllCompletions(): CompletionItem[]{
 		console.log("completion TRIGG")
 		let completions:CompletionItem[] = [];
 
@@ -102,11 +110,12 @@ export default class CompletionService {
 	protected getDotCompletions():CompletionItem[]{
 
 		const re = /(\w+).$/ // EX: "tx."
-		const range:Range = {
-			start:{character:0, line:this.pos.line},
-			end:this.pos
-		}
-		const text = this.doc?.getText(range);
+		const range:Range = new Range(new vscode.Position(this.pos.line, 0), this.pos) 
+        // {
+		// 	start:{character:0, line:this.pos.line},
+		// 	end:this.pos
+		// }
+		const text = this.doc.getText(range);
 		var arr, keyword;
 		if((arr=text?.match(re))){
 			keyword = arr[1];
@@ -139,7 +148,6 @@ export default class CompletionService {
 				label:"contract",
 				detail:"Instantiate a new Contract",
 				insertText:"contract ${1:ContractName}($2) {\n\n}",
-				insertTextFormat:2
 			});
 		}
 
@@ -152,7 +160,7 @@ export default class CompletionService {
 		for (let i = 0; i < words.length; i++) {
 			this.currentIndex += 1;
 			completions.push(
-				CompletionItem.create(words[i])
+                new CompletionItem(words[i])
 			);		
 		}
 		return completions;
@@ -163,134 +171,74 @@ export default class CompletionService {
 						"ripemd160", "sha1", "sha256", "hash160","hash256",
 						"checkSig", "checkMultiSig", "checkDataSig"]
 
-		/*
-		const comps: CompletionItem[] = [
-			{
-				label:"abs",
-				detail: 'int abs(int a): Returns the absolute value of argument a.',
-				insertText: 'abs(${1:value})',
-				insertTextFormat: 2,
-			},
-			{
-				label:"min",
-				detail:"int min(int a, int b): Returns the minimum value of arguments `a` and `b`.",
-				insertText:"min(${1:a}, ${2:b})",
-				insertTextFormat:2
-			},
-			{
-				label:"max",
-				detail:"int max(int a, int b): Returns the maximum value of arguments `a` and `b`.",
-				insertText:"max(${1:a}, ${2:b})",
-				insertTextFormat:2
-			},
-			{
-				label:"within",
-				detail:"bool within(int x, int lower, int upper): Returns `true` if and only if `x >= lower && x < upper`.",
-				insertText:"within(${1:x}, ${2:lower}, ${3:upper})",
-				insertTextFormat:2
-			},
-			{
-				label:"ripemd160",
-				detail:"bytes20 ripemd160(any x): Returns the SHA-1 hash of argument `x`.",
-				insertText:"ripemd160(${1:x})",
-				insertTextFormat:2
-			},
-			{
-				label:"sha256",
-				detail:"bytes32 sha256(any x): Returns the SHA-256 hash of argument `x`.",
-				insertText:"sha256(${1:x})",
-				insertTextFormat:2
-			},
-			{
-				label:"hash160",
-				detail:"bytes20 hash160(any x): Returns the RIPEMD-160 hash of the SHA-256 hash of argument `x`.",
-				insertText:"hash160(${1:x})",
-				insertTextFormat:2
-			},
-			{
-				label:"hash256",
-				detail:"bytes32 hash256(any x): bytes32 hash256(any x)",
-				insertText:"hash256(${1:x})",
-				insertTextFormat:2
-			},
-			{
-				label:"checkMultiSig",
-				detail:"bool checkMultiSig(sig[] sigs, pubkey[] pks): Performs a multi-signature check using a list of transaction signatures and public keys.",
-				insertText:"checkMultiSig(${1:sigs}, ${2:pks})",
-				insertTextFormat:2
-			},
-			{
-				label:"checkDataSig",
-				detail:"bool checkDataSig(datasig s, bytes msg, pubkey pk): Checks that sig `s` is a valid signature for message `msg` and matches with public key `pk`.",
-				insertText:"checkDataSig(${1:signature}, ${2:message}, ${3:pubkey})",
-				insertTextFormat:2
-			}
-		]*/
-
-		const comps: CompletionItem[] = [
+		return [
 			{
 				label:"abs",
 				detail: 'int abs(int a): Returns the absolute value of argument a.',
 				insertText: 'abs',
-				insertTextFormat: 2,
+				// insertTextFormat: 2,
 			},
 			{
 				label:"min",
 				detail:"int min(int a, int b): Returns the minimum value of arguments `a` and `b`.",
 				insertText:"min",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"max",
 				detail:"int max(int a, int b): Returns the maximum value of arguments `a` and `b`.",
 				insertText:"max",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"within",
 				detail:"bool within(int x, int lower, int upper): Returns `true` if and only if `x >= lower && x < upper`.",
 				insertText:"within",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"ripemd160",
 				detail:"bytes20 ripemd160(any x): Returns the SHA-1 hash of argument `x`.",
 				insertText:"ripemd160",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"sha256",
 				detail:"bytes32 sha256(any x): Returns the SHA-256 hash of argument `x`.",
 				insertText:"sha256",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"hash160",
 				detail:"bytes20 hash160(any x): Returns the RIPEMD-160 hash of the SHA-256 hash of argument `x`.",
 				insertText:"hash160",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"hash256",
 				detail:"bytes32 hash256(any x): bytes32 hash256(any x)",
 				insertText:"hash256",
-				insertTextFormat:2
+				// insertTextFormat:2
+			},
+			{
+				label:"checkSig",
+				detail:"bool checksig(sig s, pubkey pk): Checks that transaction signature `s` is valid for the current transaction and matches with public key `pk`.",
+				insertText:"checkSig",
+				// insertTextFormat:2
 			},
 			{
 				label:"checkMultiSig",
 				detail:"bool checkMultiSig(sig[] sigs, pubkey[] pks): Performs a multi-signature check using a list of transaction signatures and public keys.",
 				insertText:"checkMultiSig",
-				insertTextFormat:2
+				// insertTextFormat:2
 			},
 			{
 				label:"checkDataSig",
 				detail:"bool checkDataSig(datasig s, bytes msg, pubkey pk): Checks that sig `s` is a valid signature for message `msg` and matches with public key `pk`.",
 				insertText:"checkDataSig",
-				insertTextFormat:2
+				// insertTextFormat:2
 			}
 		]
-
-		return comps;
 	}
 
 	protected getOutputCompletions():CompletionItem[]{

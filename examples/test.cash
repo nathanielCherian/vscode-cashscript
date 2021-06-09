@@ -1,0 +1,9 @@
+pragma cashscript ^0.6.0;
+
+contract myContract() {
+    function test(sig s) {
+        require(checkDataSig(s, msg, pk));
+        require(tx.time >= 0);
+        require(checkSig());
+    }
+}

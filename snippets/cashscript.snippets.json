@@ -5,6 +5,11 @@
 		"description":"Set semantic version"
 	},
 
+	"Create Contract": {
+		"prefix":"contract",
+		"body":"contract ${1:ContractName}($2) {\n\n}",
+		"description":"Creates a contract"
+	},
 
 	"Function Statement" : {
 		"prefix":"function",
