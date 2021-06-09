@@ -148,7 +148,6 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 				label:"contract",
 				detail:"Instantiate a new Contract",
 				insertText:"contract ${1:ContractName}($2) {\n\n}",
-				// insertTextFormat:2
 			});
 		}
 

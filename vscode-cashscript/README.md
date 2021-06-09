@@ -1,8 +1,16 @@
-# vscode-cashscript =
+# vscode-cashscript
 
-This is the README for your extension "vscode-cashscript". After writing up a brief description, we recommend including the following sections.
+Vscode-cashscript provides tools that make it easier for developers to write smart contracts with [cashscript](cashscript.org).
+
+
 
 ## Features
+
+- Syntax Highlighting
+- Auto-Completion
+- Snippets
+- Linting
+- Contract Compilation
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 

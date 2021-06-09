@@ -20,13 +20,23 @@
           "type": "sig"
         }
       ]
+    },
+    {
+      "name": "name",
+      "covenant": false,
+      "inputs": [
+        {
+          "name": "m",
+          "type": "int"
+        }
+      ]
     }
   ],
-  "bytecode": "OP_OVER OP_HASH160 OP_EQUALVERIFY OP_2DUP OP_CHECKSIGVERIFY OP_CHECKSIG",
-  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend( pubkey pk  , sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n        // int d = 2;\r\n        // require(checkDataSig());\r\n        // require(checkDataSig(s, pk));\r\n    }\r\n\r\n\r\n}\r\n\r\n",
+  "bytecode": "OP_OVER OP_0 OP_NUMEQUAL OP_IF OP_2 OP_PICK OP_HASH160 OP_EQUALVERIFY OP_2 OP_PICK OP_2 OP_PICK OP_CHECKSIGVERIFY OP_ROT OP_ROT OP_CHECKSIG OP_NIP OP_ELSE OP_SWAP OP_1 OP_NUMEQUALVERIFY OP_OVER OP_1 OP_NUMEQUAL OP_IF OP_OVER OP_1 OP_NUMEQUALVERIFY OP_ELSE OP_OVER OP_10 OP_LESSTHAN OP_VERIFY OP_ENDIF OP_2DROP OP_1 OP_ENDIF",
+  "source": "pragma cashscript ^0.6.0;\r\n\r\ncontract P2PKH(bytes20 pkh) {\r\n    function spend( pubkey pk  , sig s) {\r\n        require(hash160(pk) == pkh);\r\n        require(checkSig(s, pk));\r\n        require(checkSig(s, pk));\r\n\r\n    }\r\n\r\n    function name(int m) {\r\n        if(m == 1){\r\n            require(m == 1);\r\n        }else {\r\n            require(m < 10);\r\n        }\r\n    }\r\n\r\n}\r\n\r\n",
   "compiler": {
     "name": "cashc",
     "version": "0.6.3"
   },
-  "updatedAt": "2021-06-09T15:38:43.124Z"
+  "updatedAt": "2021-06-09T15:45:29.447Z"
 }
