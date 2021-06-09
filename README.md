@@ -2,7 +2,7 @@
 
 Vscode-cashscript provides tools that make it easier for developers to write smart contracts with [cashscript](cashscript.org).
 
-
+![example of vscode-cashscript](media/p2pkh.gif)
 
 ## Features
 

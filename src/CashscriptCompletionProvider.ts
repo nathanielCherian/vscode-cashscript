@@ -22,17 +22,14 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
     }
 
     getAllCompletions(): CompletionItem[]{
-		console.log("completion TRIGG")
 		let completions:CompletionItem[] = [];
 
-		//completions = completions.concat(this.getDotCompletions());
-		//if(completions.length > 0) return completions;
 		if(this.isDot()){
 			return this.getDotCompletions();
 		}
 
 		completions = completions.concat(this.getVarCompletions());
-		completions = completions.concat(this.getConditionalCompletions());
+		// completions = completions.concat(this.getConditionalCompletions());
 		completions = completions.concat(this.getControlCompletions());
 		completions = completions.concat(this.getGlobalFunctionCompletions());
 		completions = completions.concat(this.getOutputCompletions());
@@ -129,7 +126,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 
 	protected getVarCompletions():CompletionItem[]{
 
-		const re = /(int|bool|string|pubkey|sig|datasig|bytes)\s+(\w+)/g;
+		const re = /(int|bool|string|pubkey|sig|datasig|bytes|bytes[0-9]+)\s+(\w+)/g;
 		const completions:CompletionItem[] = [];
 		for(const m of this.text.matchAll(re)){
 			completions.push({

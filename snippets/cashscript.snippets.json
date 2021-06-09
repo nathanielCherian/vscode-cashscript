@@ -1,11 +1,11 @@
 {
 	"Set Pragma":{
 		"prefix":"pragma",
-		"body":"pragma cashscript ^${1:0.5.6};\n",
+		"body":"pragma cashscript ^${1:0.6.0};\n",
 		"description":"Set semantic version"
 	},
 
-	"Create Contract": {
+	"Instantiate a new Contract": {
 		"prefix":"contract",
 		"body":"contract ${1:ContractName}($2) {\n\n}",
 		"description":"Creates a contract"
