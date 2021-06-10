@@ -1,116 +1,86 @@
 {
-	"name": "vscode-cashscript",
-	"description": "A language extension for cashscript.",
-	"author": "Nathaniel Cherian",
-	"license": "MIT",
-	"version": "1.0.0",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/nathanielCherian/vscode-cashscript"
-	},
-	"categories": [
-		"Snippets"
-	],
-	"keywords": [
-		"multi-root ready"
-	],
-	"engines": {
-		"vscode": "^1.43.0"
-	},
-	"activationEvents": [
-		"onLanguage:cashscript",
-		"onCommand:cashscript.sayHello"
-	],
-	"main": "./client/out/extension",
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "Example configuration",
-			"properties": {
-				"languageServerExample.maxNumberOfProblems": {
-					"scope": "resource",
-					"type": "number",
-					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
-				},
-				"languageServerExample.trace.server": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "off",
-					"description": "Traces the communication between VS Code and the language server."
-				}
-			}
-		},
-		"menus": {
-			"editor/title": [
-				{
-					"when": "resourceLangId == cashscript",
-					"command": "cashscript.compileContract",
-					"group": "navigation"
-				}
-			]
-		},
-		"languages": [
-			{
-				"id": "cashscript",
-				"aliases": [
-					"Cashscript",
-					"cashscript"
-				],
-				"extensions": [
-					".cash"
-				],
-				"configuration": "./cashscript.configuration.json"
-			}
-		],
-		"commands": [
-			{
-				"command": "cashscript.compileContract",
-				"title": "Compile Contract"
-			},
-			{
-				"command": "cashscript.sayHello",
-				"title": "Say Hello"
-			}
-		],
-		"snippets": [
-			{
-				"language": "cashscript",
-				"path": "./snippets/cashscript.snippets.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "cashscript",
-				"scopeName": "source.cash",
-				"path": "./syntaxes/cash.tmGrammar.json"
-			}
-		],
-		"keybindings":[
-			{
-				"command": "cashscript.compileContract",
-				"key": "ctrl+f5"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
-		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-		"test": "sh ./scripts/e2e.sh"
-	},
-	"devDependencies": {
-		"@types/mocha": "^8.0.3",
-		"mocha": "^8.1.1",
-		"@types/node": "^12.12.0",
-		"eslint": "^6.4.0",
-		"@typescript-eslint/parser": "^2.3.0",
-		"typescript": "^4.0.2"
-	}
+    "name": "vscode-cashscript",
+    "displayName": "vscode-cashscript",
+    "description": "Language extension for cashscript",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.50.1"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:cashscript",
+        "onCommand:cashscript.compile"
+    ],
+    "main": "./out/src/extension",
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "prepare": "node ./node_modules/vscode/bin/install"
+    },
+    "contributes": {
+        "languages": [
+            {
+                "id": "cashscript",
+                "aliases": [
+                    "cashscript",
+                    "Cashscript"
+                ],
+                "extensions": [
+                    ".cash"
+                ],
+                "configuration": "./cashscript.configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "cashscript",
+                "scopeName": "source.cash",
+                "path": "./syntaxes/cashscript.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "cashscript",
+                "path": "./snippets/cashscript.snippets.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "cashscript.compile",
+                "title": "Compile Contract"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "cashscript.compile",
+                "key": "ctrl+f5"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "when": "resourceLangId == cashscript",
+                    "command": "cashscript.compile",
+                    "group": "navigation"
+                }
+            ]
+        }
+    },
+    "dependencies": {
+        "antlr4ts": "^0.5.0-alpha.4",
+        "cashc": "^0.6.3",
+        "cashscript": "^0.6.3",
+        "vscode-languageclient": "^7.0.0",
+        "vscode-languageserver": "^7.0.0",
+        "vscode-languageserver-textdocument": "^1.0.1"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.56.0",
+        "typescript": "^4.3.2",
+        "vscode": "^1.1.37",
+        "vscode-test": "^1.5.2"
+    }
 }
