@@ -3,8 +3,8 @@
     "publisher": "NathanielCherian",
     "displayName": "cashscript",
     "description": "Cashscript language support for Visual Studio Code",
-    "version": "1.0.0",
-    "icon": "images/icon.png",
+    "version": "0.1.0",
+    "icon": "media/icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/nathanielCherian/vscode-cashscript"

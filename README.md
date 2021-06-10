@@ -50,7 +50,7 @@ None available yet.
 
 Check the [changelog](/CHANGELOG.md) for past releases. Latest stable version:
 
-### 1.0.0
+### 0.1.0
 
 Initial release of vscode-cashscript. Features:
 - Syntax Highlighting
