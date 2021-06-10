@@ -1,14 +1,34 @@
 {
-    "name": "vscode-cashscript",
-    "displayName": "vscode-cashscript",
-    "description": "Language extension for cashscript",
-    "version": "0.0.1",
+    "name": "cashscript",
+    "publisher": "NathanielCherian",
+    "displayName": "cashscript",
+    "description": "Cashscript language support for Visual Studio Code",
+    "version": "1.0.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nathanielCherian/vscode-cashscript"
+    },
+    "bugs": {
+        "url": "https://github.com/nathanielCherian/vscode-cashscript/issues"
+    },
+    "contributors": [
+        "Nathaniel Cherian"
+    ],
+    "keywords": [
+        "cashscript",
+        "bch",
+        "blockchain",
+        "compiler",
+        "contract"
+    ],
+    "categories": [
+        "Programming Languages",
+        "Snippets",
+        "Linters"
+    ],
     "engines": {
         "vscode": "^1.50.1"
     },
-    "categories": [
-        "Programming Languages"
-    ],
     "activationEvents": [
         "onLanguage:cashscript",
         "onCommand:cashscript.compile"
