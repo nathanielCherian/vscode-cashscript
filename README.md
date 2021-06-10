@@ -4,7 +4,7 @@
 
 Vscode-cashscript provides tools that make it easier for developers to write smart contracts with [cashscript](https://cashscript.org/).
 
-![example of vscode-cashscript](https://github.com/nathanielCherian/vscode-cashscript/blob/main/media/p2pkh.gif)
+![example of vscode-cashscript](https://raw.githubusercontent.com/nathanielCherian/vscode-cashscript/main/media/p2pkh.gif)
 
 ## Features
 
@@ -30,7 +30,7 @@ Install Dependencies
 cd vscode-cashscript && npm i 
 ```
 
-Open the project in vscode.=
+Open the project in vscode.
 
 ```
 code . 
