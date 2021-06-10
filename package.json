@@ -27,7 +27,7 @@
         "Linters"
     ],
     "engines": {
-        "vscode": "^1.50.1"
+        "vscode": "^1.56.0"
     },
     "activationEvents": [
         "onLanguage:cashscript",
