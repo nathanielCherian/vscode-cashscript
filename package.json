@@ -3,6 +3,7 @@
     "displayName": "vscode-cashscript",
     "description": "Language extension for cashscript",
     "version": "0.0.1",
+    "icon": "images/icon.png",
     "engines": {
         "vscode": "^1.50.1"
     },
