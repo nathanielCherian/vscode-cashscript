@@ -138,7 +138,7 @@ contract AnyHedge_v0_10(
         // Any (nLockTime >= oracle + x) will be redeemable for positive x, but the user will have to
         // wait for x blocks after the earliest redemption block.
         require(tx.time >= oracleHeight);
-
+        
         // As in diagram above - if oracle height is before Liquidation or after Maturity --> Fail
         require(within(oracleHeight, earliestLiquidationHeight, maturityHeight + 1));
 

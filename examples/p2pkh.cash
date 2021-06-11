@@ -4,5 +4,7 @@ contract P2PKH(bytes20 pkh) {
     function spend(pubkey pk, sig s) {
         require(checkSig(s, pk));
         require(hash160(pk) == pkh);
+        require(1 days == 24 hours);
+        
     }
 }
