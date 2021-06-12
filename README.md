@@ -6,6 +6,8 @@ Vscode-cashscript provides tools that make it easier for developers to write sma
 
 ![example of vscode-cashscript](https://raw.githubusercontent.com/nathanielCherian/vscode-cashscript/main/media/p2pkh.gif)
 
+A special thank you to [vscode-solidity](https://github.com/juanfranblanco/vscode-solidity) which inspired much of the code structure!
+
 ## Features
 
 - Syntax Highlighting

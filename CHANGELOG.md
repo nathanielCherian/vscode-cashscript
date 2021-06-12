@@ -15,3 +15,6 @@ Would like to implement tests and other sustainability features before bumping v
 - Fixed language grammar to have comprehensive highlighting
 - Added janky HoverProvider for variable types
 - Added split/reverse to hover provider
+
+## 0.1.2 (unreleased)
+- Added tx to completion provider and syntax highlighting
