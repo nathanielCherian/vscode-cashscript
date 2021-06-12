@@ -9,5 +9,8 @@ Initial release of vscode-cashscript. Features:
 - Snippets
 - Linting
 - Contract Compilation (press F5 or click "Compile Contract")
-
 Would like to implement tests and other sustainability features before bumping version
+
+## 0.1.1
+- Fixed language grammar to have comprehensive highlighting
+- 

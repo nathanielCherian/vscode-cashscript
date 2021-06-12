@@ -9,7 +9,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
     doc:vscode.TextDocument;
     pos:vscode.Position;
 
-    provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
+    provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[]> {
         // throw new Error('Method not implemented.');
         this.doc = document;
         this.pos = position;

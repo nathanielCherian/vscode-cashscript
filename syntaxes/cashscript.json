@@ -210,8 +210,12 @@
                     "name": "entity.name.function.checking.cashscript"
                 },
                 {
+                    "match": "\\b(OutputP2PKH|OutputP2SH|OutputNullData)\\b",
+                    "name":"entity.name.function.declaration.cashscript"
+                },
+                {
 					"match": "\\b(split|reverse)\\b",
-					"name":"support.function.function.members.cashscript"
+					"name":"support.function.members.cashscript"
 				}
             ]
         },
