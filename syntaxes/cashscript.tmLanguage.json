@@ -1,17 +1,18 @@
 {
 	"scopeName": "source.cash",
 	"patterns": [
-		{"include":"#comment"},
-		{"include":"#string"},
-		{"include":"#unit"},
-		{"include":"#type"},
-		{"include":"#control"},
-		{"include":"#function"},
-		{"include":"#declaration"},
+        {"include": "#comment"},
+        {"include": "#operator"},
+        {"include": "#control"},
+        {"include": "#constant"},
+        {"include": "#number"},
+        {"include": "#string"},
+        {"include": "#type"},
+        {"include": "#global"},
+        {"include": "#declaration"},
+        {"include": "#punctuation"}
 
-		{"include":"#variable"},
-		{"include":"#numeric"}
-	],
+    ],
 	"repository": {
 
 	  "comment": {
@@ -27,171 +28,256 @@
 		"name": "comment.block.cashscript"
 	  },
 
-	  "control" : {
-		  "patterns": [{"include":"#control-pragma"}, {"include":"#control-cashscript"}, {"include":"#control-flow"}]
-	  },
-	  "control-pragma":{
-		"match": "\\b(pragma)(?:\\s+([A-Za-z_]\\w+)\\s+([^\\s]+))?\\b",
-		"captures": {
-			"1": {
-				"name": "keyword.control.pragma.cashscript"
-			},
-			"2": {
-				"name": "constant.other.pragma.cashscript"
-			},
-			"3": {
-				"name": "constant.character.pragma.cashscript"
-			}
-		}
-	  },
-	  "control-cashscript":{
-		"match":"cashscript",
-		"name":"contant.other.cashscript.cashscript"
-	  },
-	  "control-flow":{
-		  "match":"(if|else)",
-		  "name":"keyword.control.flow.cashscript"
-	  },
+      "operator": {
+        "patterns": [
+                {
+                    "include": "#operator-logic-assignment"
+                },
+                {
+                    "include": "#operator-mapping"
+                },
+                {
+                    "include": "#operator-arithmetic"
+                },
+                {
+                    "include": "#operator-binary"
+                }
+            ]
+        },
+        "operator-logic-assignment": {
+            "match": "(&&|\\|\\||[<>!=]=?|\\+\\+|--)",
+            "name": "keyword.operator.logic_assignment.cashscript"
+        },
+        "operator-arithmetic": {
+            "match": "(\\+|\\-|\/|%)",
+            "name": "keyword.operator.arithmetic.cashscript"
+        },
+        "operator-binary": {
+            "match": "(\\^|\\&|\\|)",
+            "name": "keyword.operator.binary.cashscript"
+        },
 
-	  "function":{
-		  "patterns":[
-				{
-					"match": "\\b(require)\\b",
-					"name":"keyword.control.function.require.cashscript"
-				},
-				{
+        "control": {
+            "patterns": [
+                {
+                    "include": "#control-flow"
+                },
+                {
+                    "include": "#control-pragma"
+                },
+                {
+                    "include": "#control-other"
+                }
+            ]
+        },
+        "control-flow": {
+            "match": "\\b(if|else|require)\\b",
+            "name": "keyword.control.flow.cashscript"
+        },
+        "control-pragma": {
+            "match": "\\b(pragma)(?:\\s+([A-Za-z_]\\w+)\\s+([^\\s]+))?\\b",
+            "captures": {
+                "1": {
+                    "name": "keyword.control.pragma.cashscript"
+                },
+                "2": {
+                    "name": "entity.name.tag.pragma.cashscript"
+                },
+                "3": {
+                    "name": "constant.other.pragma.cashscript"
+                }
+            }
+        },
+        "control-other": {
+            "match": "\\b(new)\\b",
+            "name": "keyword.control.cashscript"
+        },
+
+        "constant": {
+            "patterns": [
+                {
+                    "include": "#constant-boolean"
+                },
+                {
+                    "include": "#constant-time"
+                },
+                {
+                    "include": "#constant-currency"
+                }
+            ]
+        },
+        "constant-boolean": {
+            "match": "\\b(true|false)\\b",
+            "name": "constant.language.boolean.cashscript"
+        },
+        "constant-time": {
+            "match": "\\b(seconds|minutes|hours|days|weeks)\\b",
+            "name": "constant.language.time.cashscript"
+        },
+        "constant-currency": {
+            "match": "\\b(satoshis|sats|finney|bits|bitcoin)\\b",
+            "name": "constant.language.currency.cashscript"
+        },
+
+        "number": {
+            "patterns": [
+                {
+                    "include": "#number-decimal"
+                },
+                {
+                    "include": "#number-hex"
+                }
+            ]
+        },
+        "number-decimal": {
+            "match": "\\b(\\d+(\\.\\d+)?)\\b",
+            "name": "constant.numeric.decimal.cashscript"
+        },
+        "number-hex": {
+            "match": "\\b(0[xX][a-fA-F0-9]+)\\b",
+            "name": "constant.numeric.hexadecimal.cashscript"
+        },
+
+        "string": {
+            "patterns": [
+                {
+                    "match": "\\\".*?\\\"",
+                    "name": "string.quoted.double.cashscript"
+                },
+                {
+                    "match": "\\'.*?\\'",
+                    "name": "string.quoted.single.cashscript"
+                }
+            ]
+        },
+
+        "type": {
+            "patterns": [
+                {
+                    "include": "#type-primitive"
+                }
+            ]
+        },
+        "type-primitive": {
+            "match": "\\b(int|bool|string|pubkey|sig|datasig|bytes\\d*)\\b",
+            "name": "support.type.primitive.cashscript"
+        },
+
+        "global": {
+            "patterns": [
+                {
+                    "include": "#global-variables"
+                },
+                {
+                    "include": "#global-functions"
+                }
+            ]
+        },
+        "global-variables": {
+            "patterns": [
+                {
+                    "match": "\\b(tx)(?:.(time|age|version|hashPrevouts|hashSequence|outpoint|bytecode|value|sequence|hashOutputs|locktime|hashtype|preimage))\\b",
+                    "captures":{
+                        "1":{
+                            "name":"variable.language.transaction.cashscript"
+                        },
+                        "2":{
+                            "name":"variable.parameter.transaction.cashscript"
+                        },
+                        "3":{
+                            "name":"invalid.illegal"
+                        }
+                    }
+                }
+            ]
+        },
+        "global-functions": {
+            "patterns": [
+                {
+                    "match": "\\b(require)\\b",
+                    "name": "keyword.control.exceptions.cashscript"
+                },
+                {
+                    "match": "\\b(abs|min|max|within)\\b",
+                    "name": "entity.name.function.math.cashscript"
+                },
+                {
+                    "match": "\\b(ripemd160|sha1|sha256|hash160|hash256)\\b",
+                    "name": "entity.name.function.hashing.cashscript"
+                },
+                {
+                    "match": "\\b(checkSig|checkMultiSig|checkDataSig)\\b",
+                    "name": "entity.name.function.checking.cashscript"
+                },
+                {
+                    "match": "\\b(OutputP2PKH|OutputP2SH|OutputNullData)\\b",
+                    "name":"entity.name.function.declaration.cashscript"
+                },
+                {
 					"match": "\\b(split|reverse)\\b",
-					"name":"support.function.function.splitreverse.cashscript"
-				},
-				{
-					"match": "\\b(abs|min|max|within)\\b",
-					"name":"support.function.function.arithmetic.cashscript"
-				},
-				{
-					"match": "\\b(ripemd160|sha1|sha256|hash160|hash256)\\b",
-					"name":"support.function.function.hashing.cashscript"
-				},
-				{
-					"match": "\\b(checkSig|checkMultiSig|checkDataSig)\\b",
-					"name":"support.function.function.hashing.cashscript"
+					"name":"support.function.members.cashscript"
 				}
-		  ]
-	  },
+            ]
+        },
 
-	  "string": {
-		"patterns": [
-			{
-				"match": "\\\".*?\\\"",
-				"name": "string.quoted.double.cashscript"
-			},
-			{
-				"match": "\\'.*?\\'",
-				"name": "string.quoted.single.cashscript"
-			}
-		]
-	},
 
-	"numeric":{
-		"patterns":[
-			{
-				"match": "\\b(\\d+(\\.\\d+)?)\\b",
-				"name":"constant.numeric.decimal.cashscript"
-			},
-			{
-				"match": "\\b(0[xX][a-fA-F0-9]+)\\b",
-				"name":"constant.numeric.hexadecimal.cashscript"
-			},
-			{
-				"match":"\\b([A-Za-z_]+)\\b",
-				"name":"meta.cashscript"
-			}
-		]
-	},
+        "declaration": {
+            "patterns": [
+                {
+                    "include": "#declaration-contract"
+                },
+                {
+                    "include": "#declaration-function"
+                }
+            ]
+        },
+        "declaration-contract": {
+            "patterns": [
+                {
+                    "match": "\\b(contract)(\\s+([A-Za-z_]\\w*))?\\b",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.contract.cashscript"
+                        },
+                        "3": {
+                            "name": "entity.name.type.contract.cashscript"
+                        }
+                    }
+                }
+            ]
+        },
+        "declaration-function": {
+            "patterns": [
+                {
+                    "match": "\\b(function)\\s+([A-Za-z_]\\w*)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.function.cashscript"
+                        },
+                        "2": {
+                            "name": "entity.name.function.cashscript"
+                        }
+                    }
+                }
+            ]
+        },
 
-	"unit":{
-		"patterns":[
-			{
-				"match":"\\b(satoshis\\d*|sats\\d*|finney\\d*|bits\\d*|bitcoin\\d*)\\b",
-				"name":"support.variable.unit.numeric.cashscript"
-			},
-			{
-				"match":"\\b(seconds\\d*|minutes\\d*|hours\\d*|days\\d*|weeks\\d*)\\b",
-				"name":"support.variable.unit.time.cashscript"
-			},
-			{
-				"match":"(tx)(?:.(time|age|version|hashPrevouts|hashSequence|outpoint|bytecode|value|sequence|hashOutputs|locktime|hashtype|preimage))?",
-				"captures":{
-					"1":{
-						"name":"support.variable.unit.tx.cashscript"
-					},
-					"2":{
-						"name":"support.variable.unit.tx.cashscript"
-					},
-					"3":{
-						"name":"invalid.illegal"
-					}
-				}
-			}
-		]
-	},
+        "punctuation": {
+            "patterns": [
+                {
+                    "match": ";",
+                    "name": "punctuation.terminator.statement.cashscript"
+                },
+                {
+                    "match": "\\.",
+                    "name": "punctuation.accessor.cashscript"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.cashscript"
+                }
+            ]
+        }
 
-	"type":{
-		"patterns":[{"include":"#type-primitive"}, {"include":"#type-boolean"}]
-	},
-	"type-primitive":{
-		"match": "\\b(int\\d*|bool\\d*|string\\d*|pubkey\\d*|sig\\d*|datasig\\d*|bytes|bytes\\d+(\\.\\d+)?\\d*)\\b",
-		"name": "constant.language.primitive.cashscript"
-	},
-	"type-boolean":{
-		"match":"true|false",
-		"name":"constant.language.cashscript"
-	},
-
-	  "declaration":{
-		  "patterns":[{"include":"#declaration-contract"}, {"include":"#declaration-function"}, {"include":"#declaration-output"}]
-	  },
-	  "declaration-contract":{
-		"match": "\\b(contract)(\\s+([A-Za-z_]\\w*))?\\b",
-		"captures": {
-			"1": {
-				"name": "storage.type.declaration.cashscript"
-			},
-			"2": {
-				"name": "entity.name.type.declaration.cashscript"
-			}
-		}
-	  },
-	  "declaration-function":{
-		"match": "\\b(function)(\\s+([A-Za-z_]\\w*))?\\b",
-		"captures": {
-			"1": {
-				"name": "storage.type.declaration.cashscript"
-			},
-			"3": {
-				"name": "entity.name.function.declaration.cashscript"
-			}
-		}
-	  },
-	  "declaration-output":{
-		  "match":"(new)\\s+(?:(OutputP2PKH|OutputP2SH|OutputNullData))?",
-		  "captures":{
-			  "1":{
-				  "name":"keyword.control.cashscript"
-			  },
-			  "2":{
-				  "name":"support.function.cashscript"
-			  }
-		  }
-	  },
-
-	  "variable":{
-		  "patterns":[
-			  {
-				  "match":"[A-Za-z][a-zA-Z0-9_]*",
-				  "name":"support.variable.name.cashscript"
-			  }
-		  ]
-	  }
-	
 	}
   }

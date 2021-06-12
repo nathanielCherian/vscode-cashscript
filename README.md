@@ -50,11 +50,7 @@ None available yet.
 
 Check the [changelog](/CHANGELOG.md) for past releases. Latest stable version:
 
-### 0.1.0
-
-Initial release of vscode-cashscript. Features:
-- Syntax Highlighting
-- Auto-Completion
-- Snippets
-- Linting
-- Contract Compilation (press F5 or click "Compile Contract")
+### 0.1.1
+- Fixed language grammar to have comprehensive highlighting
+- Added janky HoverProvider for variable types
+- Added split/reverse to hover provider

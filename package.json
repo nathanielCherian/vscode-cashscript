@@ -63,7 +63,7 @@
             {
                 "language": "cashscript",
                 "scopeName": "source.cash",
-                "path": "./syntaxes/cashscript.json"
+                "path": "./syntaxes/cashscript.tmLanguage.json"
             }
         ],
         "snippets": [

@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { MarkedString } from 'vscode-languageclient';
 import { LANGUAGE } from './LanguageDesc';
 
 class CashscriptHoverProvider implements vscode.HoverProvider{
@@ -13,20 +12,22 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		let range = document.getWordRangeAtPosition(position, this.re);
 		let word = document.getText(range);
 
-		//this.channel.appendLine("hoverword: "+word)
+		
+		const varTypes = this.getVariableTypes(document, word); // fix this
+		if(varTypes) return new vscode.Hover(varTypes, range);
+
 		const annotation = this.getHoverAnnotation(word);
 		if(annotation) return new vscode.Hover(annotation, range);
 
+		const memberHovers = this.getMemberHovers(document, word);
+		if(memberHovers) return new vscode.Hover(memberHovers, range);
+		
 		const miscel = this.getMiscellaneousHovers(document, position);
 		if(miscel) return new vscode.Hover(miscel, range)
-
-		// check special words
 
 		const dotHovers = this.getTxDotHovers(document, position);
 		if(dotHovers) return new vscode.Hover(dotHovers, range)
 
-		const varTypes = this.getVariableTypes(document, word); // fix this
-		if(varTypes) return new vscode.Hover(varTypes, range);
 
 		return null;
 	}
@@ -60,15 +61,27 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 	* Very bad way to get type annotations, better option: custom Tree Builder
 	*/
 	getVariableTypes(document:vscode.TextDocument, targetWord:string):vscode.MarkdownString[]{
-		const reg = /([a-zA-Z0-9]+)\s+(pk)[^a-zA-Z0-9]/;
-		const text = document.getText();
-		const matches = text.match(new RegExp(`([a-zA-Z0-9]+)\\s+(${targetWord})[^a-zA-Z0-9]`)); //regex still incomplete
-		if(!matches) return null;
 
+		const type = this.getVariableType(targetWord, document);
+		if(!type) return null;
 		return [
-			new vscode.MarkdownString().appendCodeblock(`${matches[1]} ${matches[2]}`),
+			new vscode.MarkdownString().appendCodeblock(`${type} ${targetWord}`),
 		]
 	}
+
+	/**
+	 * Gets the data type of a variable
+	 * 
+	 * @param variable the variable to be seached for
+	 * @param document the entire text document
+	 * @returns a string of the data type
+	 */
+	getVariableType(variable:string, document:vscode.TextDocument){
+		const text = document.getText();
+		const matches = text.match(new RegExp(`\\b(int|bool|string|pubkey|sig|datasig|bytes\\d*)\\s+${variable}\\b`)); //regex still incomplete
+		if(!matches) return null;
+		return matches[1];
+ 	}
 
 	getTxDotHovers(document:vscode.TextDocument, position:vscode.Position):vscode.MarkdownString[]{
 		const reg = /tx.[a-zA-Z0-9]+/;
@@ -116,9 +129,29 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		}
 
 
-		return [
-			new vscode.MarkdownString().appendCodeblock(TX_HOVERS[word].code)
-		];
+		if(TX_HOVERS[word].code){
+			return [
+				new vscode.MarkdownString().appendCodeblock(TX_HOVERS[word].code)
+			];
+		}
+
+		return null
+	}
+
+	getMemberHovers(document:vscode.TextDocument, word:string){
+		if(word === "split"){
+			return [
+				new vscode.MarkdownString().appendCodeblock('[s1, s2] sequence.split(int i)'),
+				new vscode.MarkdownString('Splits the sequence at the specified index and returns a tuple with the two resulting sequences.')
+			]
+		}else if(word === "reverse"){
+			return [
+				new vscode.MarkdownString().appendCodeblock('any sequence.reverse()'),
+				new vscode.MarkdownString('Reverses the sequence.')
+			]
+		}
+
+		return null;
 	}
 
 }
