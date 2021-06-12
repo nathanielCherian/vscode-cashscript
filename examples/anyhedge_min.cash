@@ -1,0 +1,104 @@
+pragma cashscript ^0.6.3;
+
+contract AnyHedge_v0_10(
+    bytes20   mutualRedemptionDataHash,         // 20 B
+    bytes20   payoutDataHash,                   // 20 B
+
+    int       hedgeUnitsXSatsPerBch_HighTrunc,  // 1~4 B, truncated hedge payout in Units, scaled by 1e8(sats/BCH)
+    int       payoutSats_LowTrunc,              // 1~4 B, truncated total payout sats, miner fee not included
+    bytes     highLowDeltaTruncatedZeroes,      // 0~3 B, used to scale numbers from highTrunc to lowTrunc
+    bytes     lowTruncatedZeroes,               // 0~4 B, used to scale numbers from lowTrunc to full size
+    int       lowLiquidationPrice,              // 1~4 B, clamps price data to ensure valid payouts
+    int       highLiquidationPrice,             // 1~4 B, clamps price data to ensure valid payouts
+
+    int       earliestLiquidationHeight,        // 3~4 B, earliest redemption height under liquidation conditions
+    int       maturityHeight,                   // 3~4 B, required redemption height under maturity conditions
+) {
+
+    function mutualRedeem(
+        pubkey  hedgeMutualRedeemPubk,  // 33 B
+        pubkey  longMutualRedeemPubk,   // 33 B
+
+        sig     hedgeMutualRedeemSig,   // 65 B
+        sig     longMutualRedeemSig     // 65 B
+    ) {
+        bytes20 providedHash = hash160(hedgeMutualRedeemPubk + longMutualRedeemPubk);
+        require(mutualRedemptionDataHash == providedHash);
+
+        require(checkSig(hedgeMutualRedeemSig, hedgeMutualRedeemPubk));
+        require(checkSig(longMutualRedeemSig, longMutualRedeemPubk));
+    }
+
+    function payout(
+        bytes     hedgeLockScript,   // 26 B for p2pkh, depends on script type
+        bytes     longLockScript,    // 26 B for p2pkh, depends on script type
+
+        pubkey    oraclePubk,        // 33 B, verifies message from oracle
+
+        sig       preimageSig,       // 65 B, verifies that provided preimage data matches the transaction
+        pubkey    preimagePubk,      // 33 B, anyone can provide a key/signature to redeem this contract
+
+        bytes50   oracleMsg,         // 50 B, price(4) + blockHeight(4) + blockHash(32) + blockSequence(2) + oracleSequence(4) + oracleTimestamp (4)
+        datasig   oracleSig          // 64 B, signature of oracle message, verified with oracle's pubkey
+    ) {
+        require(tx.hashPrevouts == hash256(tx.outpoint));
+
+        require(payoutDataHash == hash160(hedgeLockScript + longLockScript + oraclePubk));
+
+        require(checkDataSig(oracleSig, oracleMsg, oraclePubk));
+
+        require(checkSig(preimageSig, preimagePubk));
+
+        bytes oracleTail1 = oracleMsg.split(4)[1];
+        bytes oracleTail2 = oracleTail1.split(36)[1];
+
+        int oracleBlockSequence = int(oracleTail2.split(2)[0]);
+        int oraclePrice = int(oracleMsg.split(4)[0]);
+        int oracleHeight = int(oracleTail1.split(4)[0]);
+
+        require(oraclePrice > 0);
+
+        int clampedPrice = max(min(oraclePrice, highLiquidationPrice), lowLiquidationPrice);
+
+        require(oracleHeight < 499999999);
+
+        require(tx.time >= oracleHeight);
+        
+        require(within(oracleHeight, earliestLiquidationHeight, maturityHeight + 1));
+
+        if (oracleHeight < maturityHeight) {
+            require(!within(clampedPrice, lowLiquidationPrice + 1, highLiquidationPrice));
+        } else {
+            require(oracleBlockSequence == 1);
+        }
+
+
+        int hedgeDivHighTrunc = hedgeUnitsXSatsPerBch_HighTrunc / clampedPrice;
+        int hedgeDivLowTrunc  = int(highLowDeltaTruncatedZeroes + bytes4(hedgeDivHighTrunc));
+
+        int hedgeModHighTrunc = hedgeUnitsXSatsPerBch_HighTrunc % clampedPrice;
+
+
+        int delta = highLowDeltaTruncatedZeroes.length;
+        int modExtensionSize = min(4 - bytes(hedgeModHighTrunc).length, delta);
+        bytes modExtensionZeroes = bytes(0, modExtensionSize);
+        int hedgeModExt = int(modExtensionZeroes + bytes4(hedgeModHighTrunc));
+
+        int priceTruncationSize = delta - modExtensionSize;
+        int truncatedPrice = int(bytes(clampedPrice).split(priceTruncationSize)[1]);
+
+        int hedgeSats_LowTrunc = min(hedgeDivLowTrunc + (hedgeModExt / truncatedPrice), payoutSats_LowTrunc);
+        int longSats_LowTrunc  = payoutSats_LowTrunc - hedgeSats_LowTrunc;
+
+        bytes8 DUST = bytes8(546);
+        int fullSizeExceptLowZeroes = 8 - lowTruncatedZeroes.length;
+
+        bytes8 hedgeAmount = bytes8(lowTruncatedZeroes + bytes(hedgeSats_LowTrunc, fullSizeExceptLowZeroes)) | DUST;
+        bytes hedgeOutput = hedgeAmount + hedgeLockScript;
+
+        bytes8 longAmount = bytes8(lowTruncatedZeroes + bytes(longSats_LowTrunc, fullSizeExceptLowZeroes)) | DUST;
+        bytes longOutput = longAmount + longLockScript;
+
+        require(tx.hashOutputs == hash256(hedgeOutput + longOutput));
+    }
+}

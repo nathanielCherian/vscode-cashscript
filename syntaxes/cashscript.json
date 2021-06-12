@@ -182,7 +182,7 @@
                             "name":"variable.language.transaction.cashscript"
                         },
                         "2":{
-                            "name":"variable.language.transaction.cashscript"
+                            "name":"variable.parameter.transaction.cashscript"
                         },
                         "3":{
                             "name":"invalid.illegal"
