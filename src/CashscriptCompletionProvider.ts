@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Range, CompletionItem, CompletionItemKind } from 'vscode';
+import { DOT_COMPLETIONS } from './LanguageDesc';
 
 export default class CashscriptCompletionProvider implements vscode.CompletionItemProvider{
     
@@ -50,75 +51,17 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 		return false;
 	}
 	
-
-	DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
-		tx:[
-			{
-				label:"time",
-				kind:CompletionItemKind.Field,
-			},
-			{
-				label:"age",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"version",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"hashPrevouts",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"hashSequence",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"outpoint",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"bytecode",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"value",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"sequence",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"hashOutputs",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"locktime",
-				kind:CompletionItemKind.Field
-			},
-			{
-				label:"hashtype",
-				kind:CompletionItemKind.Field
-			},
-		]
-	}
-
 	protected getDotCompletions():CompletionItem[]{
 
 		const re = /(\w+).$/ // EX: "tx."
 		const range:Range = new Range(new vscode.Position(this.pos.line, 0), this.pos) 
-        // {
-		// 	start:{character:0, line:this.pos.line},
-		// 	end:this.pos
-		// }
 		const text = this.doc.getText(range);
 		var arr, keyword;
 		if((arr=text?.match(re))){
 			keyword = arr[1];
 			console.log("keyword: ", keyword);
 			
-			return this.DOT_COMPLETIONS[keyword];
+			return DOT_COMPLETIONS[keyword];
 		}
 
 		return []
@@ -138,19 +81,20 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 		return completions;
 	}
 
-	protected getConditionalCompletions():CompletionItem[]{
-		const completions:CompletionItem[] = [];
-		if(!this.text.includes("contract")){
-			completions.push({
-				label:"contract",
-				detail:"Instantiate a new Contract",
-				insertText:"contract ${1:ContractName}($2) {\n\n}",
-			});
-		}
+	// protected getConditionalCompletions():CompletionItem[]{
+	// 	const completions:CompletionItem[] = [];
+	// 	if(!this.text.includes("contract")){
+	// 		completions.push({
+	// 			label:"contract",
+	// 			detail:"Instantiate a new Contract",
+	// 			insertText:"contract ${1:ContractName}($2) {\n\n}",
+	// 		});
+	// 	}
 
-		return completions;
-	}
+	// 	return completions;
+	// }
 
+	
 	protected getControlCompletions():CompletionItem[]{
 		const words = ["pragma", "cashscript", "if", "else", "require"]
 		const completions = [];
@@ -271,7 +215,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 	}
 
 	protected getGlobalConstantsCompletions():CompletionItem[]{
-		const words = ["sats", "satoshis", "finney", "bit", "bitcoin", "seconds", "minutes", "hours", "days", "weeks"];
+		const words = ["sats", "satoshis", "finney", "bit", "bitcoin", "seconds", "minutes", "hours", "days", "weeks", "tx"];
 		const completions = [];
 		for (let i = 0; i < words.length; i++) {
 			this.currentIndex += 1;

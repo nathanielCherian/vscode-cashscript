@@ -1,3 +1,4 @@
+import { CompletionItem, CompletionItemKind } from "vscode";
 
 interface Data {
 	[key:string]:{
@@ -108,4 +109,59 @@ let TYPECASTS:Data = {
 
 let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION, ...STATEMENTS};
 
-export { GLOBAL_FUNCTIONS, OUTPUT_INSTANTIATION, TYPECASTS, LANGUAGE };
+
+let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
+	tx:[
+		{
+			label:"time",
+			kind:CompletionItemKind.Field,
+		},
+		{
+			label:"age",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"version",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"hashPrevouts",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"hashSequence",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outpoint",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"bytecode",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"value",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"sequence",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"hashOutputs",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"locktime",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"hashtype",
+			kind:CompletionItemKind.Field
+		},
+	]
+}
+
+
+export { GLOBAL_FUNCTIONS, OUTPUT_INSTANTIATION, TYPECASTS, LANGUAGE, DOT_COMPLETIONS };

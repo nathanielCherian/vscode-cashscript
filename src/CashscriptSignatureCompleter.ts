@@ -11,7 +11,6 @@ class CashscriptSignatureCompleter implements vscode.SignatureHelpProvider{
 		let range = document.getWordRangeAtPosition(position, this.re);
 		let word = document.getText(range).slice(0, -1); // removes the '('
 
-		//this.channel.appendLine("signature " + word);
 		const sh = new vscode.SignatureHelp();
 		const data = LANGUAGE[word] || TYPECASTS[word];
 		sh.signatures = [new vscode.SignatureInformation(data.codeDesc, new vscode.MarkdownString().appendCodeblock(data.code))];
