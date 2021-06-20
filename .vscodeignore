@@ -1,5 +1,6 @@
 .vscode/**
 .examples/**
+.src/tests/**
 .gitignore
 vsc-extension-quickstart.md
 *.svg

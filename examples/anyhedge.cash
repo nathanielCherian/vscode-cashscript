@@ -51,7 +51,6 @@ contract AnyHedge_v0_10(
         require(checkSig(hedgeMutualRedeemSig, hedgeMutualRedeemPubk));
         require(checkSig(longMutualRedeemSig, longMutualRedeemPubk));
 
-        
     }
 
     // Payout in Liquidation or Maturity conditions
