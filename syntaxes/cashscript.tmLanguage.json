@@ -159,7 +159,7 @@
             ]
         },
         "type-primitive": {
-            "match": "\\b(int|bool|string|pubkey|sig|datasig|bytes\\d*)\\b",
+            "match": "\\b(int|bool|string|pubkey|sig|datasig|byte|bytes\\d*)\\b",
             "name": "support.type.primitive.cashscript"
         },
 

@@ -78,7 +78,7 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 	 */
 	getVariableType(variable:string, document:vscode.TextDocument){
 		const text = document.getText();
-		const matches = text.match(new RegExp(`\\b(int|bool|string|pubkey|sig|datasig|bytes\\d*)\\s+${variable}\\b`)); //regex still incomplete
+		const matches = text.match(new RegExp(`\\b(int|bool|string|pubkey|sig|datasig|byte|bytes\\d*)\\s+${variable}\\b`)); //regex still incomplete
 		if(!matches) return null;
 		return matches[1];
  	}

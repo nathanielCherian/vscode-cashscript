@@ -1,10 +1,11 @@
-pragma cashscript ^0.6.0;
+pragma cashscript ^0.6.4;
 
 // This is an experimental contract for a more "streaming" Mecenas experience
 // Completely untested, just a concept
 contract Mecenas(bytes4 initialBlock, int pledgePerBlock, bytes20 recipient, bytes20 funder) {
     function receive(pubkey pk, sig s, int pledge) {
         require(checkSig(s, pk));
+        int m = date('asdasda');
 
         int initial = int(initialBlock);
         require(tx.time >= initial);

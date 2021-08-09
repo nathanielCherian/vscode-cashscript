@@ -69,7 +69,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 
 	protected getVarCompletions():CompletionItem[]{
 
-		const re = /(int|bool|string|pubkey|sig|datasig|bytes|bytes[0-9]+)\s+(\w+)/g;
+		const re = /(int|bool|string|pubkey|sig|datasig|byte|bytes|bytes[0-9]+)\s+(\w+)/g;
 		const completions:CompletionItem[] = [];
 		for(const m of this.text.matchAll(re)){
 			completions.push({
@@ -199,7 +199,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 	}
 
 	protected getTypesCompletions():CompletionItem[]{
-		const words = ["int", "bool", "string", "bytes", "pubkey", "sig", "datasig", "true", "false", "date"]
+		const words = ["int", "bool", "string", "byte", "bytes", "pubkey", "sig", "datasig", "true", "false", "date"]
 		const completions = [];
 		for (let i = 0; i < words.length; i++) {
 			this.currentIndex += 1;
