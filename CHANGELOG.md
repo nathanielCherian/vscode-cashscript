@@ -16,5 +16,6 @@ Would like to implement tests and other sustainability features before bumping v
 - Added janky HoverProvider for variable types
 - Added split/reverse to hover provider
 
-## 0.1.2 (unreleased)
+## 0.1.2
 - Added tx to completion provider and syntax highlighting
+- added byte alias for bytes1

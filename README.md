@@ -52,7 +52,6 @@ None available yet.
 
 Check the [changelog](/CHANGELOG.md) for past releases. Latest stable version:
 
-### 0.1.1
-- Fixed language grammar to have comprehensive highlighting
-- Added janky HoverProvider for variable types
-- Added split/reverse to hover provider
+### 0.1.2
+- Added tx to completion provider and syntax highlighting
+- added byte alias for bytes1
