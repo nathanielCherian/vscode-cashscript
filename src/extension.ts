@@ -57,6 +57,7 @@ export function activate(context: ExtensionContext){
     // Subscribe to Commands here
     context.subscriptions.push(vscode.commands.registerCommand('cashscript.compile', () => {
         var filename = vscode.window.activeTextEditor.document.fileName;
+        if(!filename.endsWith('.cash')) return; // force filename to end with .cash
         try{
             const artifact = compileFile(filename);
             const artifactJSON = JSON.stringify(artifact, null, 2);
