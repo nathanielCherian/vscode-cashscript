@@ -2,7 +2,8 @@ pragma cashscript 0.7.0;
 
 contract P2PKH() {
     function spend() {
-        bytes2 left, bytes2 right = 0x123456.split(2);
-        require(left == right);
+        // bytes2 left, bytes2 right = 0x123456.split(2);
+        // require(left == right);
+        require(tx.outputs[0].value == tx.inputs[this.activeInputIndex].value - 1000);
     }
 }
