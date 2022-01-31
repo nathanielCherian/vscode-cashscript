@@ -3,7 +3,6 @@ pragma cashscript ^0.6.0;
 contract P2PKH(bytes20 pkh) {
     function spend(pubkey pk, sig s) {
         byte m  = 0x01;
-        bytes2 left, bytes1 right = 0x123456.split(2)
         require(checkSig(s, pk));
         require(hash160(pk) == pkh);
         require(int(m) == 2);
