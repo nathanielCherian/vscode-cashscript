@@ -62,10 +62,6 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 			if(arr[2]) keyword+="_indexed"; // ex. inputs[0].
 			console.log("keyword: ", keyword);
 			
-			// return [{
-			// 	label:keyword,
-			// 	kind:CompletionItemKind.Field
-			// }]
 			return DOT_COMPLETIONS[keyword];
 		}
 

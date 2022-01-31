@@ -4,7 +4,6 @@ contract P2PKH() {
     function spend() {
         // bytes2 left, bytes2 right = 0x123456.split(2);
         // require(left == right);
-
-        require(tx.outputs[0].value == tx.inputs[this.activeInputIndex].value - 1000);
+        require(tx.outputs[0].value == tx.inputs[this.activeInputIndex].value - 10*10);
     }
 }
