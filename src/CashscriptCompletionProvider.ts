@@ -53,14 +53,19 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 	
 	protected getDotCompletions():CompletionItem[]{
 
-		const re = /(\w+).$/ // EX: "tx."
+		const re = /(\w+)(\[.+\])?.$/ // EX: "tx."
 		const range:Range = new Range(new vscode.Position(this.pos.line, 0), this.pos) 
 		const text = this.doc.getText(range);
 		var arr, keyword;
 		if((arr=text?.match(re))){
 			keyword = arr[1];
+			if(arr[2]) keyword+="_indexed"; // ex. inputs[0].
 			console.log("keyword: ", keyword);
 			
+			// return [{
+			// 	label:keyword,
+			// 	kind:CompletionItemKind.Field
+			// }]
 			return DOT_COMPLETIONS[keyword];
 		}
 

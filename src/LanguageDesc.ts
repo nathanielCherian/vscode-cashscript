@@ -110,8 +110,7 @@ let TYPECASTS:Data = {
 let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION, ...STATEMENTS};
 
 
-let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
-	tx:[
+/*
 		{
 			label:"time",
 			kind:CompletionItemKind.Field,
@@ -158,6 +157,90 @@ let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
 		},
 		{
 			label:"hashtype",
+			kind:CompletionItemKind.Field
+		},
+*/
+
+let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
+	tx:[
+		{
+			label:"version",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"locktime",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"inputs",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outputs",
+			kind:CompletionItemKind.Field
+		}
+	],
+
+	inputs: [
+		{
+			label:"length",
+			kind:CompletionItemKind.Field
+		}
+	],
+
+	inputs_indexed: [
+		{
+			label:"value",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"lockingBytecode",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outpointTransactionHash",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outpointIndex",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"unlockingBytecode",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"sequenceNumber",
+			kind:CompletionItemKind.Field
+		},
+	],
+
+	outputs: [
+		{
+			label:"length",
+			kind:CompletionItemKind.Field
+		},
+
+	],
+
+	outputs_indexed: [
+		{
+			label:"value",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"lockingBytecode",
+			kind:CompletionItemKind.Field
+		},
+	],
+
+	this:[
+		{
+			label: "activeInputIndex",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label: "activeBytecode",
 			kind:CompletionItemKind.Field
 		},
 	]
