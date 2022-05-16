@@ -19,3 +19,11 @@ Would like to implement tests and other sustainability features before bumping v
 ## 0.1.2
 - Added tx to completion provider and syntax highlighting
 - added byte alias for bytes1
+
+## 0.2.0
+- Compatible with ```cashscript@0.7.0```
+    - Updated to new Native Introspection functionality
+    - Added tuple destructuring
+    - Added new ```constant``` keyword
+    - Added ```*``` operator
+    
