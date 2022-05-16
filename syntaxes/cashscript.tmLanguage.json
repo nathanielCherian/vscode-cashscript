@@ -70,6 +70,9 @@
                 },
                 {
                     "include": "#control-this"
+                },
+                {
+                    "include":"#control-modifier"
                 }
             ]
         },
@@ -99,6 +102,11 @@
             "match": "\\b(this)\\b",
             "name": "variable.language.transaction.cashscript"
         },
+        "control-modifier": {
+            "match": "\\b(constant)\\b",
+            "name":"constant.language.modifer"
+        },
+
         "constant": {
             "patterns": [
                 {
