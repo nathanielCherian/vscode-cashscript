@@ -1,7 +1,8 @@
+**/*.ts
+**/tsconfig.json
+!file.ts
 .vscode/**
-.vscode-test/**
-out/test/**
-test/**
+examples/**
 src/**
 **/*.map
 *.vsix
