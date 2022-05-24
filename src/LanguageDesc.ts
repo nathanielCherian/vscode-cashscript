@@ -113,43 +113,7 @@ let LANGUAGE:Data = {...GLOBAL_FUNCTIONS, ...OUTPUT_INSTANTIATION, ...STATEMENTS
 let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
 	tx:[
 		{
-			label:"time",
-			kind:CompletionItemKind.Field,
-		},
-		{
-			label:"age",
-			kind:CompletionItemKind.Field
-		},
-		{
 			label:"version",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"hashPrevouts",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"hashSequence",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"outpoint",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"bytecode",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"value",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"sequence",
-			kind:CompletionItemKind.Field
-		},
-		{
-			label:"hashOutputs",
 			kind:CompletionItemKind.Field
 		},
 		{
@@ -157,7 +121,75 @@ let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
 			kind:CompletionItemKind.Field
 		},
 		{
-			label:"hashtype",
+			label:"inputs",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outputs",
+			kind:CompletionItemKind.Field
+		}
+	],
+
+	inputs: [
+		{
+			label:"length",
+			kind:CompletionItemKind.Field
+		}
+	],
+
+	inputs_indexed: [
+		{
+			label:"value",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"lockingBytecode",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outpointTransactionHash",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"outpointIndex",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"unlockingBytecode",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"sequenceNumber",
+			kind:CompletionItemKind.Field
+		},
+	],
+
+	outputs: [
+		{
+			label:"length",
+			kind:CompletionItemKind.Field
+		},
+
+	],
+
+	outputs_indexed: [
+		{
+			label:"value",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label:"lockingBytecode",
+			kind:CompletionItemKind.Field
+		},
+	],
+
+	this:[
+		{
+			label: "activeInputIndex",
+			kind:CompletionItemKind.Field
+		},
+		{
+			label: "activeBytecode",
 			kind:CompletionItemKind.Field
 		},
 	]

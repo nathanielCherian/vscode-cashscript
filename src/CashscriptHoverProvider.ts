@@ -25,8 +25,8 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		const miscel = this.getMiscellaneousHovers(document, position);
 		if(miscel) return new vscode.Hover(miscel, range)
 
-		const dotHovers = this.getTxDotHovers(document, position);
-		if(dotHovers) return new vscode.Hover(dotHovers, range)
+		// const dotHovers = this.getTxDotHovers(document, position);
+		// if(dotHovers) return new vscode.Hover(dotHovers, range)
 
 
 		return null;
@@ -83,12 +83,12 @@ class CashscriptHoverProvider implements vscode.HoverProvider{
 		return matches[1];
  	}
 
+	// NEED TO UPDATE THIS AFTER NEW DOCS COME OUT
 	getTxDotHovers(document:vscode.TextDocument, position:vscode.Position):vscode.MarkdownString[]{
 		const reg = /tx.[a-zA-Z0-9]+/;
 		let range = document.getWordRangeAtPosition(position, reg);
 		let word = document.getText(range).substring(3);
 
-		// /### tx.(\w+)\n+```solidity\n(.+)\n```/
 		const TX_HOVERS = {
 			time:{
 				code:'require(tx.time >= <expression>);'

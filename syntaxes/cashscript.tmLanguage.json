@@ -67,6 +67,12 @@
                 },
                 {
                     "include": "#control-other"
+                },
+                {
+                    "include": "#control-this"
+                },
+                {
+                    "include":"#control-modifier"
                 }
             ]
         },
@@ -91,6 +97,14 @@
         "control-other": {
             "match": "\\b(new)\\b",
             "name": "keyword.control.cashscript"
+        },
+        "control-this": {
+            "match": "\\b(this)\\b",
+            "name": "variable.language.transaction.cashscript"
+        },
+        "control-modifier": {
+            "match": "\\b(constant)\\b",
+            "name":"constant.language.modifer"
         },
 
         "constant": {
@@ -176,7 +190,7 @@
         "global-variables": {
             "patterns": [
                 {
-                    "match": "\\b(tx)(?:.(time|age|version|hashPrevouts|hashSequence|outpoint|bytecode|value|sequence|hashOutputs|locktime|hashtype|preimage))?\\b",
+                    "match": "\\b(tx)(?:.(version|locktime|inputs|outputs))?\\b",
                     "captures":{
                         "1":{
                             "name":"variable.language.transaction.cashscript"
