@@ -1,107 +1,98 @@
-pragma cashscript ^0.6.3;
+pragma cashscript ^0.7.0;
 
 // AnyHedge contract allows Hedge and Long to enter into an agreement where Hedge reduces their exposure
 // to price volatility, measured in UNITS/BCH, and Long increases their exposure to the same volatility.
 // AnyHedge also has a safety feature where Hedge and Long can exit the contract at any time through mutual agreement.
-contract AnyHedge_v0_10(
-    //        We store a hash of fixed parameters in the scriptCode to make room for more actual code.
-    //        The contents of each hash are detailed in redemption function parameters.
-    //        Each hash is as a hash160: ripemd160(sha256(data)).
-    //        The contents of each hash are verified at redemption.
-    bytes20   mutualRedemptionDataHash,         // 20 B
-    bytes20   payoutDataHash,                   // 20 B
+contract AnyHedge_v0_11(
+    //        Mutual redemption
+    //        Hedge and Long public keys. Required to verify the mutual redemption transaction signatures.
+    pubkey    hedgeMutualRedeemPublicKey,   // 33 B
+    pubkey    longMutualRedeemPublicKey,    // 33 B
+    int       enableMutualRedemption,       // 1 B
+
+    //        Arbitrary output lock scripts for Hedge and Long.
+    //        AnyHedge can payout to p2pkh, p2sh or any valid output.
+    //        E.g. p2pkh: pushLockScript + (opDup + opHash160 + pushHash + longPKH + opEqualVerify + opCheckSig)
+    //        E.g. p2sh: pushLockScript + (opHash160 + pushHash + hedgeScriptHash + opEqual)
+    //        An invalid lock script will make the contract un-redeemable so both must be validated carefully.
+    bytes     hedgeLockScript,              // 26 B for p2pkh, depends on script type
+    bytes     longLockScript,               // 26 B for p2pkh, depends on script type
+
+    //        Oracle
+    pubkey    oraclePublicKey,              // 33 B, verifies message from oracle
 
     //        Money
-    //        Note: All int types below must be minimally encoded both as arguments and in preimage construction.
-    int       hedgeUnitsXSatsPerBch_HighTrunc,  // 1~4 B, truncated hedge payout in Units, scaled by 1e8(sats/BCH)
-    int       payoutSats_LowTrunc,              // 1~4 B, truncated total payout sats, miner fee not included
-    bytes     highLowDeltaTruncatedZeroes,      // 0~3 B, used to scale numbers from highTrunc to lowTrunc
-    bytes     lowTruncatedZeroes,               // 0~4 B, used to scale numbers from lowTrunc to full size
-    int       lowLiquidationPrice,              // 1~4 B, clamps price data to ensure valid payouts
-    int       highLiquidationPrice,             // 1~4 B, clamps price data to ensure valid payouts
+    //        Note: All int types below must be minimally encoded.
+    int       nominalUnitsXSatsPerBch,      // 1~8 B, hedge payout in Units, scaled by 1e8(sats/BCH)
+    int       payoutSats,                   // 1~8 B, total payout sats, miner fee not included
+    int       lowLiquidationPrice,          // 1~4 B, clamps price data to ensure valid payouts
+    int       highLiquidationPrice,         // 1~4 B, clamps price data to ensure valid payouts
 
     //        Time
-    int       earliestLiquidationHeight,        // 3~4 B, earliest redemption height under liquidation conditions
-    int       maturityHeight,                   // 3~4 B, required redemption height under maturity conditions
+    int       startTimestamp,               // 4 B, earliest redemption timestamp under liquidation conditions
+    int       maturityTimestamp,            // 4 B, required redemption timestamp under maturity conditions
 ) {
 
     // Mutual redemption is a safety feature where Hedge and Long can agree to exit the contract at any time.
     // It can be useful for example in the case of a funding error.
     // Note: This controls all contract inputs, such as fees, even if Hedge and Long did not provide them.
     function mutualRedeem(
-        //      ------------------------------------------------------------------------------------------------
-        //      Fixed parameters (the content of the mutual redemption hash stored in the scriptCode)
-        //      ------------------------------------------------------------------------------------------------
-        //      Hedge and Long public keys. Required to verify the mutual redemption transaction signatures.
-        pubkey  hedgeMutualRedeemPubk,  // 33 B
-        pubkey  longMutualRedeemPubk,   // 33 B
-
-        //      ------------------------------------------------------------------------------------------------
-        //      This redemption transaction's parameters
-        //      ------------------------------------------------------------------------------------------------
-        //      Hedge and Long signatures of the mutual redemption transaction.
-        sig     hedgeMutualRedeemSig,   // 65 B
-        sig     longMutualRedeemSig     // 65 B
+        //    Hedge and Long signatures of the mutual redemption transaction.
+        sig   hedgeMutualRedeemSignature,   // 65 B
+        sig   longMutualRedeemSignature     // 65 B
     ) {
-        // Before trusting the fixed parameters, we must confirm that they match the hash in the scriptCode.
-        bytes20 providedHash = hash160(hedgeMutualRedeemPubk + longMutualRedeemPubk);
-        require(mutualRedemptionDataHash == providedHash);
+        // Check that mutual redemption is enabled
+        require(bool(enableMutualRedemption));
 
         // Verify that both Hedge and Long agree to the details of this transaction.
-        require(checkSig(hedgeMutualRedeemSig, hedgeMutualRedeemPubk));
-        require(checkSig(longMutualRedeemSig, longMutualRedeemPubk));
-
+        require(checkSig(hedgeMutualRedeemSignature, hedgeMutualRedeemPublicKey));
+        require(checkSig(longMutualRedeemSignature, longMutualRedeemPublicKey));
     }
 
     // Payout in Liquidation or Maturity conditions
     function payout(
-        //        ------------------------------------------------------------------------------------------------
-        //        Fixed parameters (the content of the payout hash stored in the scriptCode)
-        //        ------------------------------------------------------------------------------------------------
-        //        Arbitrary output lock scripts for Hedge and Long.
-        //        AnyHedge can payout to p2pkh, p2sh or any valid output.
-        //        E.g. p2pkh: pushLockScript + (opDup + opHash160 + pushHash + longPKH + opEqualVerify + opCheckSig)
-        //        E.g. p2sh: pushLockScript + (opHash160 + pushHash + hedgeScriptHash + opEqual)
-        //        An invalid lock script will make the contract un-redeemable so both must be validated carefully.
-        bytes     hedgeLockScript,   // 26 B for p2pkh, depends on script type
-        bytes     longLockScript,    // 26 B for p2pkh, depends on script type
-
-        //        Oracle
-        pubkey    oraclePubk,        // 33 B, verifies message from oracle
-
-        //        ------------------------------------------------------------------------------------------------
-        //        Redemption parameters
-        //        ------------------------------------------------------------------------------------------------
-        //        Transaction verification
-        sig       preimageSig,       // 65 B, verifies that provided preimage data matches the transaction
-        pubkey    preimagePubk,      // 33 B, anyone can provide a key/signature to redeem this contract
-
-        //        Oracle Data
-        bytes50   oracleMsg,         // 50 B, price(4) + blockHeight(4) + blockHash(32) + blockSequence(2) + oracleSequence(4) + oracleTimestamp (4)
-        datasig   oracleSig          // 64 B, signature of oracle message, verified with oracle's pubkey
+        // Oracle Data
+        // {
+        //     bytes4 messageTimestamp;
+        //     bytes4 messageSequence;
+        //     bytes4 contentSequence;
+        //     bytes4 contentData / price;
+        // }
+        bytes   settlementMessage,     // 16 B, current oracle message
+        datasig settlementSignature,   // 64 B, signature of oracle message, verified with oracle's pubkey
+        bytes   previousMessage,       // 16 B, previous oracle message
+        datasig previousSignature,     // 64 B, signature of previous oracle message, verified with oracle's pubkey
     ) {
-        // Check that only a single input is used in this transaction by checking
-        // that the prevouts are equal to only the current outpoint
-        require(tx.hashPrevouts == hash256(tx.outpoint));
-
-        // Before trusting the fixed parameters, we must confirm that they match the hash in the scriptCode.
-        require(payoutDataHash == hash160(hedgeLockScript + longLockScript + oraclePubk));
+        // Check that only a single input is used in this transaction
+        require(tx.inputs.length == 1);
 
         // Payout must happen through Liquidation or Maturity.
-        // In both cases, we need to authenticate the oracle message.
-        require(checkDataSig(oracleSig, oracleMsg, oraclePubk));
+        // In both cases, we need to authenticate the current and previous oracle message.
+        require(checkDataSig(previousSignature, previousMessage, oraclePublicKey));
+        require(checkDataSig(settlementSignature, settlementMessage, oraclePublicKey));
 
-        // Covenant verification is automatically handled by CashScript.
-        // By including this signature check, we gain access to all `tx.<...>` preimage fields.
-        require(checkSig(preimageSig, preimagePubk));
+        // Extract previous message's content sequence.
+        int previousSequence = int(previousMessage.split(8)[1].split(4)[0]);
 
-        // Decode the parts of the oracle message that we need.
-        bytes oracleTail1 = oracleMsg.split(4)[1];
-        bytes oracleTail2 = oracleTail1.split(36)[1];
+        // If the "content sequence" is negative it represents metadata rather than a price message
+        // and cannot be used inside the contract.
+        require(previousSequence > 0);
 
-        int oracleBlockSequence = int(oracleTail2.split(2)[0]);
-        int oraclePrice = int(oracleMsg.split(4)[0]);
-        int oracleHeight = int(oracleTail1.split(4)[0]);
+        // Extract settlement message's content sequence.
+        int settlementSequence = int(settlementMessage.split(8)[1].split(4)[0]);
+
+        // Assert that the two messages connect without gaps.
+        require(settlementSequence - 1 == previousSequence);
+
+        // Extract the previous message's timestamp.
+        int previousTimestamp = int(previousMessage.split(4)[0]);
+
+        // Assert that the previous observation happened *before* the maturity time.
+        // This means that *if* the current message is on/after maturity, it is the first.
+        require(previousTimestamp < maturityTimestamp);
+
+        // Extract the settlement message's price.
+        int oraclePrice = int(settlementMessage.split(12)[1]);
 
         // Fail if the oracle price is out of specification. Specifically:
         // 1. Fail if the price is negative.
@@ -111,134 +102,45 @@ contract AnyHedge_v0_10(
         // Clamp the price within the allowed price range so that redemption will always be accurate and valid.
         int clampedPrice = max(min(oraclePrice, highLiquidationPrice), lowLiquidationPrice);
 
-        // Validate oracle timing and price
-        // Here we add the complexity of using nLockTime so that we can get a protocol-level
-        // guarantee about the height that the oracle claims. The guarantee that we want is that any claimed
-        // oracle height is for an existing block, i.e. future oracle messages cannot be used to redeem a contract.
+        // Validate oracle timing and price.
         //
-        // This is a visualization of the oracle timing with each time point representing an oracle block height.
-        // L: Earliest Liquidation block
-        // M: Maturity block
+        // This is a visualization of the oracle timing.
+        // L: Earliest Liquidation timestamp
+        // M: Maturity timestamp
         //             L          M
         //   <---------|----------|--------->
         // A <---------○                      (Redemption should fail)
         // B           ●----------○           (Liquidation is allowed only if oracle price is out of bounds)
-        // C                      ●           (Maturity is allowed only for first price message in block M)
+        // C                      ●           (Maturity is allowed only for first price message on/after timestamp M)
         // D                      ○---------> (Redemption should fail)
         //
-        // Verify that oracle height is a valid block value.
-        // Note that if oracleHeight is negative, that will be caught and failed by the checkLockTime below.
-        // Note that the test for < 499999999 could be <= 499999999, but contract correctness verification was done
-        // with the value 499999999 so it is left as is.
-        require(oracleHeight < 499999999);
 
-        // Verify at the protocol level that oracle height is an existing block up to and including tip.
-        // This reduces the trust in the oracle because the contract can ignore future-dated oracle messages.
-        // This also means that in order to redeem a contract at the earliest
-        // block possible, user must submit the redemption transaction with (nLockTime = oracle).
-        // Any (nLockTime >= oracle + x) will be redeemable for positive x, but the user will have to
-        // wait for x blocks after the earliest redemption block.
-        require(tx.time >= oracleHeight);
-        
-        // As in diagram above - if oracle height is before Liquidation or after Maturity --> Fail
-        require(within(oracleHeight, earliestLiquidationHeight, maturityHeight + 1));
+        // Extract the settlement message's timestamp.
+        int settlementTimestamp = int(settlementMessage.split(4)[0]);
 
-        // Because of above verifications of the reported oracle height, it can only be either:
-        if (oracleHeight < maturityHeight) {
-            // 1. During liquidation period.
-            //    In this case, we must do an additional verification that the clamped price is outside the maturity-only price range.
-            require(!within(clampedPrice, lowLiquidationPrice + 1, highLiquidationPrice));
-        } else {
-            // 2. Exactly at maturity height.
-            //    In this case, the original oracle price can be in or out of bounds. Any clamped price is acceptable.
-            //    However, we require the first message of the block, which is index 1 by specification
-            require(oracleBlockSequence == 1);
-        }
+        // Fail if the oracle timestamp is before the earliest liquidation time
+        require(settlementTimestamp >= startTimestamp);
+
+        // At this point we already know that the previous message was before maturity and that the current
+        // message is after the earliest liquidation time. So to be valid this message needs to be either:
+        // 1. A maturation, in which case the message must be on or after maturity time.
+        // 2. A liquidation, in which case the price must be out of liquidation bounds.
+        bool onOrAfterMaturity = settlementTimestamp >= maturityTimestamp;
+        bool priceOutOfBounds = !within(clampedPrice, lowLiquidationPrice + 1, highLiquidationPrice);
+        require(onOrAfterMaturity || priceOutOfBounds);
 
         // We survived the oracle validation gauntlet so redeem the contract with the clamped price.
 
-        // Calculate hedge payout sats first.
-        // We start by dividing our high truncated "hedge composite value" (hedge units * 1e8) by the clamped price
-        int hedgeDivHighTrunc = hedgeUnitsXSatsPerBch_HighTrunc / clampedPrice;
-        // We then partially untruncate it to the low truncation level
-        // We know (value/price < payout) so the un-truncated value fits into a 4-byte script int
-        // because payout does.
-        // Note: In the case highLowDeltaTruncatedZeroes is length 4, this would fail. However, due to the same
-        //       guarantee above, that cannot happen with properly set price since it implies (value/price > payout).
-        int hedgeDivLowTrunc  = int(highLowDeltaTruncatedZeroes + bytes4(hedgeDivHighTrunc));
-
-        // Normally the mod (remainder) part of a script division is useless because it is less than zero.
-        // However since we are un-truncating numbers (multiplying by a power of 2), we can do a math trick to
-        // un-truncate and divide the mod part at the lower truncation level.
-        // To begin, for our positive numbers:
-        //     value/price =   (value DIV price)     + ((value MOD price)    / price)
-        //                    ^hedgeDivHighTrunc^     ^hedgeModHighTrunc^
-        //                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this is normally zero and useless
-        // But we need to un-truncate before doing payout calculations and we get:
-        //     value/price = hedgeDivHighTrunc *2^delta  + (hedgeModHighTrunc            /price) *2^delta
-        // Or rearranging:
-        //     value/price = hedgeDivHighTrunc *2^delta  + (hedgeModHighTrunc *2^delta)  /price
-        //                   ^hedgeDivLowTrunc^^^^^^^^^     ^hedgeModLowTrunc^^^^^^^^^
-        int hedgeModHighTrunc = hedgeUnitsXSatsPerBch_HighTrunc % clampedPrice;
-
-        // Unfortunately, the un-truncated value%price can be too large for a 4-byte script int
-        // (see https://gitlab.com/GeneralProtocols/anyhedge/library/-/issues/84).
-        // Because of this we need to apply an additional math trick.
-        // Instead of performing the full untruncation on hedgeModHighTrunc, we can
-        // untruncate hedgeModHighTrunc as far as possible, while truncating the
-        // price by the remaining bytes. Since we are dividing by the price afterwards,
-        // this is equivalent (albeit with lower precision). This is also not possible
-        // for a delta value of 3, because of the reasons outlined in the issue.
-        // We do not account for this in the contract, instead we place a limit
-        // on the hedgeUnits of 1M units, which will NEVER result in a delta of 3
-
-        int delta = highLowDeltaTruncatedZeroes.length;
-        // Determine how far we can untruncate hedgeModHighTrunc (max size == 4)
-        int modExtensionSize = min(4 - bytes(hedgeModHighTrunc).length, delta);
-        // Then untruncate the value by the calculated amount
-        bytes modExtensionZeroes = bytes(0, modExtensionSize);
-        int hedgeModExt = int(modExtensionZeroes + bytes4(hedgeModHighTrunc));
-
-        // Calculate the remaining truncation bytes and truncate the price by that number
-        int priceTruncationSize = delta - modExtensionSize;
-        int truncatedPrice = int(bytes(clampedPrice).split(priceTruncationSize)[1]);
-
-        // Combine the DIV and MOD values to get the hedge payout and long payout
-        // If the price had to be truncated above, division by the smaller price can
-        // result in a value that is slightly larger than the true value. So sometimes
-        // the hedge payout is slightly larger than the true value. That is acceptable
-        // except when the hedge payout is now larger than the total payout. Therefore
-        // hedge payout is clamped to the total payout.
-        int hedgeSats_LowTrunc = min(hedgeDivLowTrunc + (hedgeModExt / truncatedPrice), payoutSats_LowTrunc);
-        int longSats_LowTrunc  = payoutSats_LowTrunc - hedgeSats_LowTrunc;
-
-        // Now we have a maximum precision (not perfect) hedge value we can use to calculate long payout.
-        // We un-truncate from LowTrunc to full 8-byte numbers
-        // Note: Dust safety
-        //       If the price movement is very large, the final hedge or long sats could be less than the dust limit.
-        //       Therefore We bitwise-OR the final output values with the dust amount to ensure that outputs are
-        //       always viable. The dust amount is currently 546, hex 222, in little-endian 2202000.
-        //       This requires adding at least 2x dust sats to the funding that the contract is unaware of.
-        //       In almost all cases, the 2x dust will be split between adding to payouts and adding to the miner fee.
-        // Note: Alternative dust methods
-        //       There are other ways to ensure dust but they are more complicated, less robust and have
-        //       a larger impact on the economics of the contract.
-        bytes8 DUST = bytes8(546);
-        int fullSizeExceptLowZeroes = 8 - lowTruncatedZeroes.length;
-
-        // Calculate the hedge amount by effectively bit-shifting with the lowTruncatedZeroes
-        // and apply dust safety by doing a bitwise OR with the DUST value
-        bytes8 hedgeAmount = bytes8(lowTruncatedZeroes + bytes(hedgeSats_LowTrunc, fullSizeExceptLowZeroes)) | DUST;
-        // Construct hedge output
-        bytes hedgeOutput = hedgeAmount + hedgeLockScript;
-
-        // Calculate the long amount by effectively bit-shifting with the lowTruncatedZeroes
-        // and apply dust safety by doing a bitwise OR with the DUST value
-        bytes8 longAmount = bytes8(lowTruncatedZeroes + bytes(longSats_LowTrunc, fullSizeExceptLowZeroes)) | DUST;
-        // Construct long output
-        bytes longOutput = longAmount + longLockScript;
+        // Calculate payout sats, including dust safety
+        int DUST = 546;
+        int hedgeSats = max(DUST, nominalUnitsXSatsPerBch / clampedPrice);
+        int longSats = max(DUST, payoutSats - hedgeSats);
 
         // Check that the hedge output + long output match this transaction's outputs
-        require(tx.hashOutputs == hash256(hedgeOutput + longOutput));
+        require(tx.outputs.length == 2);
+        require(tx.outputs[0].value == hedgeSats);
+        require(tx.outputs[0].lockingBytecode == hedgeLockScript);
+        require(tx.outputs[1].value == longSats);
+        require(tx.outputs[1].lockingBytecode == longLockScript);
     }
 }

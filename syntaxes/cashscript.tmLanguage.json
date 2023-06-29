@@ -49,7 +49,7 @@
             "name": "keyword.operator.logic_assignment.cashscript"
         },
         "operator-arithmetic": {
-            "match": "(\\+|\\-|\/|%)",
+            "match": "(\\+|\\-|\/|%|\\*)",
             "name": "keyword.operator.arithmetic.cashscript"
         },
         "operator-binary": {
@@ -148,7 +148,7 @@
             "name": "constant.numeric.decimal.cashscript"
         },
         "number-hex": {
-            "match": "\\b(0[xX][a-fA-F0-9]+)\\b",
+            "match": "\\b(0[xX][a-fA-F0-9]*)\\b",
             "name": "constant.numeric.hexadecimal.cashscript"
         },
 
@@ -228,7 +228,7 @@
                     "name": "entity.name.function.utility.cashscript"
                 },
                 {
-                    "match": "\\b(OutputP2PKH|OutputP2SH|OutputNullData)\\b",
+                    "match": "\\b(LockingBytecodeP2PKH|LockingBytecodeP2SH20|LockingBytecodeP2SH32|LockingBytecodeNullData)\\b",
                     "name":"entity.name.function.declaration.cashscript"
                 },
                 {
