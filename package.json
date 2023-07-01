@@ -79,6 +79,7 @@
         "vscode-languageserver-textdocument": "^1.0.4"
     },
     "devDependencies": {
+        "@types/node": "^20.3.3",
         "@types/vscode": "^1.63.1",
         "esbuild": "^0.12.29",
         "typescript": "^4.5.5",
