@@ -1,0 +1,15 @@
+pragma cashscript ^0.7.0;
+
+contract P2PKH() {
+    function spend() {
+        require(tx.inputs[0].tokenCategory == bytes32(0));
+        require(tx.inputs[0].nftCommitment == bytes32(0));
+        require(tx.inputs[0].tokenAmount == 0);
+
+        require(tx.outputs[0].tokenCategory == bytes32(0));
+        require(tx.outputs[0].nftCommitment == bytes32(0));
+        require(tx.outputs[0].tokenAmount == 0);
+
+        require(tx.outputs[0].lockingBytecode == new LockingBytecodeP2SH32(bytes32(0)));
+    }
+}

@@ -3,7 +3,7 @@ import { Range, CompletionItem, CompletionItemKind } from 'vscode';
 import { DOT_COMPLETIONS } from './LanguageDesc';
 
 export default class CashscriptCompletionProvider implements vscode.CompletionItemProvider{
-    
+
     text=""
     offset=0
     currentIndex = 0;
@@ -50,18 +50,18 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 		if(t === '.') return true;
 		return false;
 	}
-	
+
 	protected getDotCompletions():CompletionItem[]{
 
 		const re = /(\w+)(\[.+\])?.$/ // EX: "tx."
-		const range:Range = new Range(new vscode.Position(this.pos.line, 0), this.pos) 
+		const range:Range = new Range(new vscode.Position(this.pos.line, 0), this.pos)
 		const text = this.doc.getText(range);
 		var arr, keyword;
 		if((arr=text?.match(re))){
 			keyword = arr[1];
 			if(arr[2]) keyword+="_indexed"; // ex. inputs[0].
 			console.log("keyword: ", keyword);
-			
+
 			return DOT_COMPLETIONS[keyword];
 		}
 
@@ -95,7 +95,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 	// 	return completions;
 	// }
 
-	
+
 	protected getControlCompletions():CompletionItem[]{
 		const words = ["pragma", "cashscript", "if", "else", "require"]
 		const completions = [];
@@ -103,7 +103,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 			this.currentIndex += 1;
 			completions.push(
                 new CompletionItem(words[i])
-			);		
+			);
 		}
 		return completions;
 	}
@@ -184,7 +184,7 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 	}
 
 	protected getOutputCompletions():CompletionItem[]{
-		const words = ["OutputP2PKH", "OutputP2PSH", "OutputNullData"]
+		const words = ["LockingBytecodeP2PKH", "LockingBytecodeP2SH20", "LockingBytecodeP2SH32", "LockingBytecodeNullData"]
 		const completions = [];
 		for (let i = 0; i < words.length; i++) {
 			this.currentIndex += 1;
@@ -192,9 +192,9 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 				{
 					label: words[i],
 					kind: CompletionItemKind.Keyword,
-					data: i+1	
+					data: i+1
 				}
-			);		
+			);
 		}
 		return completions;
 	}
@@ -208,9 +208,9 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 				{
 					label: words[i],
 					kind: CompletionItemKind.Keyword,
-					data: i+1	
+					data: i+1
 				}
-			);		
+			);
 		}
 		return completions;
 	}
@@ -224,9 +224,9 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 				{
 					label: words[i],
 					kind: CompletionItemKind.Keyword,
-					data: i+1	
+					data: i+1
 				}
-			);		
+			);
 		}
 		return completions;
 	}

@@ -14,7 +14,6 @@ A special thank you to [vscode-solidity](https://github.com/juanfranblanco/vscod
 - Auto-Completion
 - Snippets
 - Linting
-- Contract Compilation
 
 ## Development Instructions
 
@@ -23,19 +22,19 @@ Press **F5** or click the "**Compile Contract**" button in the top right. A json
 Clone the project
 
 ```
-git clone https://github.com/nathanielCherian/vscode-cashscript 
+git clone https://github.com/nathanielCherian/vscode-cashscript
 ```
 
 Install Dependencies
 
 ```
-cd vscode-cashscript && npm i 
+cd vscode-cashscript && npm i
 ```
 
 Open the project in vscode.
 
 ```
-code . 
+code .
 ```
 
 Press F5 anywhere to start the test window, open the examples folder to test out any '.cash' file. All relevent files are located within the /src directory.
