@@ -1,6 +1,8 @@
 # vscode-cashscript
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/nathanielcherian.cashscript.svg)](https://marketplace.visualstudio.com/items?itemName=nathanielcherian.cashscript)  [![Downloads](https://vsmarketplacebadge.apphb.com/downloads/nathanielcherian.cashscript.svg)](https://marketplace.visualstudio.com/items?itemName=nathanielcherian.cashscript) [![Installs](https://vsmarketplacebadge.apphb.com/installs/nathanielcherian.cashscript.svg)](https://marketplace.visualstudio.com/items?itemName=nathanielcherian.cashscript) [![Rating](https://vsmarketplacebadge.apphb.com/rating-star/nathanielcherian.cashscript.svg)](https://marketplace.visualstudio.com/items?itemName=nathanielcherian.cashscript#review-details)
+![Visual Studio Marketplace Version (including pre-releases)](https://img.shields.io/visual-studio-marketplace/v/nathanielCherian.cashscript)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/nathanielcherian.cashscript)
+![Visual Studio Marketplace Rating (Stars)](https://img.shields.io/visual-studio-marketplace/stars/nathanielCherian.cashscript)
 
 Vscode-cashscript provides tools that make it easier for developers to write smart contracts with [cashscript](https://cashscript.org/).
 
