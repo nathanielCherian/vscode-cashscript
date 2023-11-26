@@ -33,6 +33,9 @@ import { AssignStatementContext } from "./CashScriptParser.js";
 import { TimeOpStatementContext } from "./CashScriptParser.js";
 import { RequireStatementContext } from "./CashScriptParser.js";
 import { IfStatementContext } from "./CashScriptParser.js";
+import { ConsoleStatementContext } from "./CashScriptParser.js";
+import { ConsoleParameterContext } from "./CashScriptParser.js";
+import { ConsoleParameterListContext } from "./CashScriptParser.js";
 import { FunctionCallContext } from "./CashScriptParser.js";
 import { ExpressionListContext } from "./CashScriptParser.js";
 import { ExpressionContext } from "./CashScriptParser.js";
@@ -271,6 +274,27 @@ export interface CashScriptVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitIfStatement?: (ctx: IfStatementContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `CashScriptParser.consoleStatement`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConsoleStatement?: (ctx: ConsoleStatementContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `CashScriptParser.consoleParameter`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConsoleParameter?: (ctx: ConsoleParameterContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `CashScriptParser.consoleParameterList`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConsoleParameterList?: (ctx: ConsoleParameterListContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `CashScriptParser.functionCall`.
