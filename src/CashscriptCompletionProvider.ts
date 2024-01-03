@@ -109,9 +109,9 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 	}
 
 	protected getGlobalFunctionCompletions():CompletionItem[]{
-		const words = ["abs","min","max","within",
-						"ripemd160", "sha1", "sha256", "hash160","hash256",
-						"checkSig", "checkMultiSig", "checkDataSig"]
+		const words = ["abs", "min", "max", "within",
+						"ripemd160", "sha1", "sha256", "hash160", "hash256",
+						"checkSig", "checkMultiSig", "checkDataSig", "require"]
 
 		return [
 			{
@@ -178,6 +178,24 @@ export default class CashscriptCompletionProvider implements vscode.CompletionIt
 				label:"checkDataSig",
 				detail:"bool checkDataSig(datasig s, bytes msg, pubkey pk): Checks that sig `s` is a valid signature for message `msg` and matches with public key `pk`.",
 				insertText:"checkDataSig",
+				// insertTextFormat:2
+			},
+			{
+				label:"require",
+				detail:"require(bool expression, string debugMessage?): Puts a constraint on the `expression` failing the script execution if expression resolves to false. `debugMessage` will be present in the error log of the debug evaluation of the script. Has no effect in production.",
+				insertText:"require",
+				// insertTextFormat:2
+			},
+			{
+				label:"require",
+				detail:"require(bool expression): Puts a constraint on the `expression` failing the script execution if expression resolves to false",
+				insertText:"require",
+				// insertTextFormat:2
+			},
+			{
+				label:"console.log",
+				detail:"console.log(...args): Logs primitve data or variable values to debug console. Has no effect in production.",
+				insertText:"console.log",
 				// insertTextFormat:2
 			}
 		]

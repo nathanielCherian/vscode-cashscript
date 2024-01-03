@@ -57,6 +57,14 @@ let GLOBAL_FUNCTIONS:Data = {
 		code:'bool checkDataSig(datasig s, bytes msg, pubkey pk)',
 		codeDesc:'Checks that sig `s` is a valid signature for message `msg` and matches with public key `pk`.',
 	},
+	require:{
+		code:'require(bool expression, string debugMessage?)',
+		codeDesc:'Puts a constraint on the `expression` failing the script execution if expression resolves to false. `debugMessage` will be present in the error log of the debug evaluation of the script. Has no effect in production.',
+	},
+	"console.log":{
+		code:'console.log(...args)',
+		codeDesc:'Logs primitve data or variable values to debug console. Has no effect in production.',
+	}
 }
 
 let INSTANTIATIONS:Data = {
@@ -79,10 +87,6 @@ let INSTANTIATIONS:Data = {
 }
 
 let STATEMENTS:Data = {
-	require:{
-		code:'null require( exp )',
-		codeDesc:"Takes a boolean expression, if it evaluates to 'false' the contract fails. Used to ensure requirements"
-	}
 }
 
 let TYPECASTS:Data = {
@@ -218,7 +222,14 @@ let DOT_COMPLETIONS:{[key:string]:CompletionItem[]} = {
 			label: "activeBytecode",
 			kind:CompletionItemKind.Field
 		},
-	]
+	],
+
+	console:[
+		{
+			label: "log",
+			kind:CompletionItemKind.Field,
+		},
+	],
 }
 
 

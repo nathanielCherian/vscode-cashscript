@@ -3,7 +3,7 @@
     "publisher": "NathanielCherian",
     "displayName": "cashscript",
     "description": "Cashscript language support for Visual Studio Code",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "icon": "media/icon.png",
     "repository": {
         "type": "git",
@@ -28,7 +28,7 @@
         "Linters"
     ],
     "engines": {
-        "vscode": "^1.63.1"
+        "vscode": "^1.83.0"
     },
     "activationEvents": [
         "onLanguage:cashscript"
@@ -42,7 +42,7 @@
         "test-compile": "tsc -p ./",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "prepare": "node ./node_modules/vscode/bin/install"
+        "package": "vsce package"
     },
     "contributes": {
         "languages": [
@@ -74,16 +74,16 @@
     },
     "dependencies": {
         "antlr4ts": "^0.5.0-alpha.4",
+        "vsce": "^2.15.0",
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0",
-        "vscode-languageserver-textdocument": "^1.0.4"
+        "vscode-languageserver-textdocument": "^1.0.4",
+        "vscode-test": "^1.6.1"
     },
     "devDependencies": {
         "@types/node": "^20.3.3",
-        "@types/vscode": "^1.63.1",
+        "@types/vscode": "^1.83.0",
         "esbuild": "^0.12.29",
-        "typescript": "^4.5.5",
-        "vscode": "^1.1.37",
-        "vscode-test": "^1.6.1"
+        "typescript": "^4.5.5"
     }
 }
