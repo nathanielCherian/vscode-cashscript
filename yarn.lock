@@ -189,12 +189,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cashscript/utils@npm:^0.14.0-next.3":
-  version: 0.14.0-next.3
-  resolution: "@cashscript/utils@npm:0.14.0-next.3"
+"@cashscript/utils@npm:^0.14.0-next.4":
+  version: 0.14.0-next.4
+  resolution: "@cashscript/utils@npm:0.14.0-next.4"
   dependencies:
     "@bitauth/libauth": "npm:^3.1.0-next.8"
-  checksum: 10c0/9856456ee6ccc238f21c152528f596edc8958e6ef9b121b5355fe61528c5c00a6e3cd436ebd19f15f955eb5f6c373da4b0357e2c869f9d93573bcad785e9a671
+  checksum: 10c0/29bc9bd695913f13ab59cf97bdce91cf0d073c7aacd3ad8a52a5d36043809ca2babbd09a71939a7dadbc09ef7cea97be105d2218b25ceeeb9fff0a839c1614fa
   languageName: node
   linkType: hard
 
@@ -1122,18 +1122,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cashc@npm:^0.14.0-next.3":
-  version: 0.14.0-next.3
-  resolution: "cashc@npm:0.14.0-next.3"
+"cashc@npm:^0.14.0-next.4":
+  version: 0.14.0-next.4
+  resolution: "cashc@npm:0.14.0-next.4"
   dependencies:
     "@bitauth/libauth": "npm:^3.1.0-next.8"
-    "@cashscript/utils": "npm:^0.14.0-next.3"
+    "@cashscript/utils": "npm:^0.14.0-next.4"
     antlr4: "npm:^4.13.2"
     commander: "npm:^14.0.0"
-    semver: "npm:^7.7.2"
+    semver: "npm:^7.8.5"
   bin:
     cashc: dist/cashc-cli.js
-  checksum: 10c0/fc0e8c3e101e4184f522cdc2cc16374c14e07eb57893678d133d7bc138e38cb142321cba34d95416b594d932b147a9dc3ca8e4a4ec06dc3bfa3bf1a5b585d355
+  checksum: 10c0/fbe95b532716d5f9f5fdb5da38700b9fb5f9f232ff377bdd9c783dd3cc6502489a26ab1feed83a29cc7dafb9fd5654ee47137f9aa78780d3da903daa5514315c
   languageName: node
   linkType: hard
 
@@ -1145,7 +1145,7 @@ __metadata:
     "@types/semver": "npm:^7"
     "@types/vscode": "npm:^1.83.0"
     "@vscode/vsce": "npm:^3.0.0"
-    cashc: "npm:^0.14.0-next.3"
+    cashc: "npm:^0.14.0-next.4"
     cashc-012: "npm:cashc@^0.12.2"
     cashc-013: "npm:cashc@^0.13.2"
     prettier: "npm:^3.4.2"
@@ -3224,7 +3224,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.5.2, semver@npm:^7.5.4":
+"semver@npm:^7.5.2, semver@npm:^7.5.4, semver@npm:^7.8.5":
   version: 7.8.5
   resolution: "semver@npm:7.8.5"
   bin:

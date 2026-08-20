@@ -1,0 +1,28 @@
+// New additions in CashScript v0.14.0-next.4:
+// - package imports: paths that don't start with './', '../' or '/' are resolved from
+//   node_modules, so contract libraries can be published and installed as npm packages
+// - tuple destructuring into existing variables (see tuple-reassignment.cash)
+pragma cashscript ^0.14.0;
+
+// Resolved from the nearest node_modules directory (examples/node_modules here), walking up
+// through parent directories just like Node.js module resolution
+import "fibonacci/fib.cash";
+import "@cashlibs/hashing/double-hash.cash";
+
+contract PackageImports(bytes32 expectedHash) {
+    function spend(bytes preimage, int fibIndex) {
+        require(doubleHash(preimage) == expectedHash);
+
+        int current = 0;
+        int next = 1;
+        for (int i = 0; i < fibIndex; i++) {
+            // The package's function returns two values, destructured back into the
+            // variables that were passed in
+            (current, next) = nextFib(current, next);
+        }
+
+        // Constants and functions from a package's own (relative) imports are available too
+        require(isWithinFibBounds(current));
+        require(current < MAX_FIB);
+    }
+}

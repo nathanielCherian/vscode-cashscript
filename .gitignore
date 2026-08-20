@@ -1,6 +1,8 @@
 out
 dist
 node_modules
+# Example fixtures that emulate installed packages (re-included despite the ignore above)
+!examples/node_modules/
 client/server
 .vscode-test
 *.vsix

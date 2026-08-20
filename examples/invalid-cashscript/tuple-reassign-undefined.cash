@@ -1,0 +1,15 @@
+pragma cashscript ^0.14.0;
+
+function swap(int x, int y) returns (int, int) {
+  return y, x;
+}
+
+contract TupleReassignUndefined() {
+  function spend(int seed) {
+    int a = seed;
+    // A tuple target without a type reassigns an existing variable, so `b` — which is
+    // never declared — is an undefined reference
+    (a, b) = swap(a, seed);
+    require(a + b >= 0);
+  }
+}

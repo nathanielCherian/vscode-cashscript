@@ -100,7 +100,7 @@ let STATEMENTS: Data = {
   import: {
     code: 'import "path/to/file.cash";',
     codeDesc:
-      'Imports the reusable functions and global constants declared in another CashScript file, resolved relative to this file. Import directives must appear at the top of the file, after any `pragma` directives. Available since CashScript 0.14.',
+      'Imports the reusable functions and global constants declared in another CashScript file. Paths starting with `./`, `../` or `/` are resolved relative to this file; any other path is a package import, resolved from `node_modules` (e.g. `import "mathlib/math.cash";`). Import directives must appear at the top of the file, after any `pragma` directives. Available since CashScript 0.14.',
   },
   return: {
     code: 'return expression(, expression...)',
@@ -114,7 +114,7 @@ let DECLARATION_KEYWORDS: Data = {
   returns: {
     code: 'function name(params) returns (T1, T2, ...)',
     codeDesc:
-      'Declares the return type(s) of a user-defined function. A call to a function with multiple return values must be destructured into exactly one variable per return value (`int a, int b = fn()`). A function without a `returns` clause returns nothing and is called as a statement. Available since CashScript 0.14.',
+      'Declares the return type(s) of a user-defined function. A call to a function with multiple return values must be destructured into exactly one target per return value (`int a, int b = fn()`). Targets without a type reassign an existing variable, optionally mixed with fresh declarations and optionally parenthesised (`(a, int b) = fn()`). A function without a `returns` clause returns nothing and is called as a statement. Available since CashScript 0.14.',
   },
 };
 

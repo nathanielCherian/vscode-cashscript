@@ -1,0 +1,10 @@
+pragma cashscript ^0.14.0;
+
+// Package imports are resolved from node_modules, and this package isn't installed
+import "nonexistent-cashscript-package/math.cash";
+
+contract MissingPackageImport() {
+  function spend(int x) {
+    require(x == 1);
+  }
+}

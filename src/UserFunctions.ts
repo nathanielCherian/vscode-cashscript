@@ -1,6 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { blankOutComments, canonicaliseImportPath, MAX_IMPORTED_FILES } from './utils';
+import { collectImportGraph } from './ImportGraph';
+import { blankOutComments } from './utils';
 
 /** A reusable function declared at the top level of a file (CashScript 0.14+) */
 export interface UserFunction {
@@ -11,7 +10,7 @@ export interface UserFunction {
   parameters: string[];
   /** Declared return types, e.g. `['int']` — empty for void functions */
   returnTypes: string[];
-  /** The imported file's path relative to the document, when defined in an imported file */
+  /** The imported file's path, when defined in an imported file */
   importedFrom?: string;
 }
 
@@ -21,7 +20,7 @@ export interface GlobalConstant {
   type: string;
   /** Flattened declaration, e.g. `int constant MAX_ATTEMPTS = 3` */
   declaration: string;
-  /** The imported file's path relative to the document, when defined in an imported file */
+  /** The imported file's path, when defined in an imported file */
   importedFrom?: string;
 }
 
@@ -34,42 +33,21 @@ export interface UserSymbols {
 const FUNCTION_DEF_REGEX = /\bfunction\s+([A-Za-z]\w*)\s*\(([^)]*)\)\s*(?:returns\s*\(([^)]*)\))?/g;
 const CONSTANT_DEF_REGEX =
   /\b(int|bool|string|pubkey|sig|datasig|byte|bytes\d*)\s+constant\s+([A-Za-z]\w*)\s*=\s*([^;]*);/g;
-const IMPORT_REGEX = /^[ \t]*import\s+(["'])(.*?)\1\s*;/gm;
 
 /**
  * Collects the document's top-level functions and global constants, including those in
- * (transitively) imported files, which are read from disk relative to the document.
+ * (transitively) imported files, which are read from disk relative to the document — or from
+ * node_modules for package imports.
  */
 export function collectUserSymbols(code: string, documentPath?: string): UserSymbols {
   const symbols = collectFromSource(code);
 
   if (documentPath === undefined) return symbols;
 
-  const documentDir = path.dirname(documentPath);
-  const visited = new Set<string>();
-  const queue = parseImportPaths(code).map((importPath) => canonicaliseImportPath('.', importPath));
-
-  while (queue.length > 0 && visited.size < MAX_IMPORTED_FILES) {
-    const canonicalPath = queue.shift();
-    if (canonicalPath === undefined) break;
-    if (visited.has(canonicalPath)) continue;
-    visited.add(canonicalPath);
-
-    let content: string;
-    try {
-      content = fs.readFileSync(path.resolve(documentDir, canonicalPath), 'utf8');
-    } catch {
-      continue;
-    }
-
-    const imported = collectFromSource(content);
-    symbols.functions.push(...imported.functions.map((f) => ({ ...f, importedFrom: canonicalPath })));
-    symbols.constants.push(...imported.constants.map((c) => ({ ...c, importedFrom: canonicalPath })));
-
-    const importDir = path.posix.dirname(canonicalPath);
-    for (const nestedPath of parseImportPaths(content)) {
-      queue.push(canonicaliseImportPath(importDir, nestedPath));
-    }
+  for (const file of collectImportGraph(code, documentPath).files) {
+    const imported = collectFromSource(file.content);
+    symbols.functions.push(...imported.functions.map((f) => ({ ...f, importedFrom: file.canonicalPath })));
+    symbols.constants.push(...imported.constants.map((c) => ({ ...c, importedFrom: file.canonicalPath })));
   }
 
   return symbols;
@@ -123,10 +101,6 @@ function collectFromSource(code: string): UserSymbols {
   }
 
   return { functions, constants };
-}
-
-function parseImportPaths(code: string): string[] {
-  return Array.from(blankOutComments(code).matchAll(IMPORT_REGEX)).map((match) => match[2]);
 }
 
 function braceDepthAt(text: string, index: number): number {

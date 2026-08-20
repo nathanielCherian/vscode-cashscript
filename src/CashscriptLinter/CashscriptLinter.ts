@@ -1,10 +1,10 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver';
 import { SafeErrorListener } from './ErrorListeners';
 import type { CashScriptError, Point } from 'cashc';
 import { gtr, intersects, ltr, satisfies } from 'semver';
-import { blankOutComments, canonicaliseImportPath, MAX_IMPORTED_FILES } from '../utils';
+import { canonicaliseImportPath, collectImportGraph, parseImportStatements } from '../ImportGraph';
+import { blankOutComments } from '../utils';
 
 type CashcModule = Pick<typeof import('cashc'), 'compileString'>;
 type CashscriptCompilerVersion = '0.12' | '0.13' | '0.14';
@@ -20,7 +20,7 @@ const CASHC_IMPORTERS: Record<CashscriptCompilerVersion, () => Promise<CashcModu
 const CASHC_VERSIONS: Record<CashscriptCompilerVersion, string> = {
   '0.12': '0.12.2',
   '0.13': '0.13.2',
-  '0.14': '0.14.0-next.3',
+  '0.14': '0.14.0-next.4',
 };
 const LATEST_COMPILER_VERSION: CashscriptCompilerVersion = '0.14';
 // Versions that predate import directives; newer versions take the full linting path
@@ -49,14 +49,14 @@ export default class CashscriptLinter {
       return compileAndCollectDiagnostics(compileString, code);
     }
 
-    const files = prefetchImportedFiles(code, documentPath);
+    const imports = prefetchImportedFiles(code, documentPath);
 
     // Errors in imported files carry that file's line numbers, so imports are linted
     // separately (reported on their directive) before the main document compiles
-    const importDiagnostics = validateImportedFiles(code, files, compileString);
+    const importDiagnostics = validateImportedFiles(code, imports, compileString);
     if (importDiagnostics.length > 0) return importDiagnostics;
 
-    return compileAndCollectDiagnostics(compileString, code, files);
+    return compileAndCollectDiagnostics(compileString, code, imports.files);
   }
 }
 
@@ -115,60 +115,36 @@ function clampDiagnosticToCode(diagnostic: Diagnostic, stubLine: number | undefi
   return { ...diagnostic, range, message };
 }
 
-interface ImportStatement {
-  path: string;
-  range: Range;
+/** The document's imported sources, prepared for cashc's in-memory `files` option */
+interface PrefetchedImports {
+  /** Imported sources, keyed the way cashc's in-memory resolver looks them up */
+  files: Record<string, string>;
+  /** Keys of files that were reached through a package (node_modules) import */
+  packagePaths: Set<string>;
+  /** Import paths that could not be found in any node_modules directory */
+  unresolvedPackageImports: Set<string>;
 }
 
-function parseImportStatements(code: string): ImportStatement[] {
-  const codeWithoutComments = blankOutComments(code);
-  const importRegex = /^([ \t]*)(import\s+(["'])(.*?)\3\s*;)/gm;
-
-  return Array.from(codeWithoutComments.matchAll(importRegex)).map((match) => {
-    const line = codeWithoutComments.slice(0, match.index).split('\n').length - 1;
-    const startCharacter = match[1].length;
-
-    return {
-      path: match[4],
-      range: {
-        start: { line, character: startCharacter },
-        end: { line, character: startCharacter + match[2].length },
-      },
-    };
-  });
-}
+const NO_IMPORTS: PrefetchedImports = {
+  files: {},
+  packagePaths: new Set(),
+  unresolvedPackageImports: new Set(),
+};
 
 /**
  * Reads the document's import graph from disk, keyed by canonical path for cashc's
  * `files` option. Unreadable files are left out so the compiler reports them in place.
  */
-function prefetchImportedFiles(code: string, documentPath?: string): Record<string, string> {
-  const files: Record<string, string> = {};
-  if (documentPath === undefined) return files;
+function prefetchImportedFiles(code: string, documentPath?: string): PrefetchedImports {
+  if (documentPath === undefined) return NO_IMPORTS;
 
-  const documentDir = path.dirname(documentPath);
-  const queue = parseImportStatements(code).map((statement) => canonicaliseImportPath('.', statement.path));
+  const { files, unresolvedPackageImports } = collectImportGraph(code, documentPath);
 
-  while (queue.length > 0 && Object.keys(files).length < MAX_IMPORTED_FILES) {
-    const canonicalPath = queue.shift();
-    if (canonicalPath === undefined) break;
-    if (canonicalPath in files) continue;
-
-    let content: string;
-    try {
-      content = fs.readFileSync(path.resolve(documentDir, canonicalPath), 'utf8');
-    } catch {
-      continue;
-    }
-
-    files[canonicalPath] = content;
-    const importDir = path.posix.dirname(canonicalPath);
-    for (const statement of parseImportStatements(content)) {
-      queue.push(canonicaliseImportPath(importDir, statement.path));
-    }
-  }
-
-  return files;
+  return {
+    files: Object.fromEntries(files.map((file) => [file.canonicalPath, file.content])),
+    packagePaths: new Set(files.filter((file) => file.isPackageImport).map((file) => file.canonicalPath)),
+    unresolvedPackageImports,
+  };
 }
 
 /**
@@ -177,21 +153,30 @@ function prefetchImportedFiles(code: string, documentPath?: string): Record<stri
  */
 function validateImportedFiles(
   code: string,
-  files: Record<string, string>,
+  imports: PrefetchedImports,
   compileString: CashcModule['compileString'],
 ): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
 
   for (const statement of parseImportStatements(code)) {
     const canonicalPath = canonicaliseImportPath('.', statement.path);
-    const source = files[canonicalPath];
-    // Unreadable imports are reported (with the right location) by the main compile
-    if (source === undefined) continue;
+    const source = imports.files[canonicalPath];
+
+    if (source === undefined) {
+      // node_modules resolution happens here rather than in the compiler (which only sees the
+      // in-memory files), so a package that isn't installed is reported here too
+      if (imports.unresolvedPackageImports.has(statement.path)) {
+        const message = `Could not find imported file '${statement.path}' in any node_modules directory`;
+        diagnostics.push(Diagnostic.create(statement.range, message, DiagnosticSeverity.Error));
+      }
+      // Other unreadable imports are reported (with the right location) by the main compile
+      continue;
+    }
 
     const [firstError] = compileAndCollectDiagnostics(
       compileString,
       source,
-      rekeyFilesRelativeTo(canonicalPath, files),
+      rekeyFilesRelativeTo(canonicalPath, imports),
     );
     if (!firstError) continue;
 
@@ -205,12 +190,16 @@ function validateImportedFiles(
 }
 
 // Re-keys the map relative to the imported file's directory so its own imports resolve;
-// the file itself stays in the map so cycles surface as the compiler's cyclic-import error
-function rekeyFilesRelativeTo(canonicalPath: string, files: Record<string, string>): Record<string, string> {
+// the file itself stays in the map so cycles surface as the compiler's cyclic-import error.
+// Package imports are looked up verbatim by the compiler, so their keys are left alone.
+function rekeyFilesRelativeTo(canonicalPath: string, imports: PrefetchedImports): Record<string, string> {
   const importDir = path.posix.dirname(canonicalPath);
 
   return Object.fromEntries(
-    Object.entries(files).map(([filePath, content]) => [path.posix.relative(importDir, filePath), content]),
+    Object.entries(imports.files).map(([filePath, content]) => [
+      imports.packagePaths.has(filePath) ? filePath : path.posix.relative(importDir, filePath),
+      content,
+    ]),
   );
 }
 

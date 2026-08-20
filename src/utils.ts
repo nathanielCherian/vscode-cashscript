@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { fileURLToPath } from 'url';
 // Must stay a type-only import: this module is also loaded by the language server
 // process, where the vscode module does not exist at runtime
@@ -18,14 +17,6 @@ export function uriToFilePath(uri: string): string | undefined {
   } catch {
     return undefined;
   }
-}
-
-// Limits import graph traversal in case of pathological import graphs
-export const MAX_IMPORTED_FILES = 64;
-
-// Mirrors cashc's in-memory resolver: normalised POSIX paths relative to the document
-export function canonicaliseImportPath(fromDir: string, importPath: string): string {
-  return path.posix.normalize(path.posix.join(fromDir, importPath));
 }
 
 // Blanks out comment contents (newlines preserved) so offsets stay aligned

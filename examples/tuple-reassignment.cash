@@ -1,0 +1,43 @@
+// New in CashScript v0.14.0-next.4: a tuple destructuring target without a type reassigns an
+// existing variable instead of declaring a new one, optionally parenthesised and optionally
+// mixed with fresh declarations
+pragma cashscript ^0.14.0;
+
+function swap(int x, int y) returns (int, int) {
+    return y, x;
+}
+
+// Returns a fresh value followed by the two updated accumulators
+function step(int x, int y) returns (int, int, int) {
+    return x * x + 1, y, x;
+}
+
+contract TupleReassignment() {
+    function spend(int seed) {
+        int a = seed;
+        int b = seed + 1;
+
+        // Reassigning both existing variables
+        (a, b) = swap(a, b);
+
+        // Mixing a fresh declaration with a reassignment
+        (int c, a) = swap(a, b);
+
+        // Loop-carried state, reassigned in place on every iteration
+        for (int i = 0; i < 4; i++) {
+            (a, b) = swap(a, b);
+        }
+
+        // Declarations first compiles to the smallest bytecode inside loops and branches
+        for (int j = 0; j < 4; j++) {
+            (int lo, a, b) = step(a, b);
+            require(lo >= 0);
+        }
+
+        // The parentheses are optional, in both the old and the new form
+        b, int d = swap(a, c);
+        int e, int f = swap(b, d);
+
+        require(a + b + c + d + e + f >= 0);
+    }
+}

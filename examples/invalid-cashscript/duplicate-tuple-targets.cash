@@ -1,0 +1,14 @@
+pragma cashscript ^0.14.0;
+
+function pair(int n) returns (int, int) {
+  return n + 1, n + 2;
+}
+
+contract DuplicateTupleTargets() {
+  function spend(int n) {
+    int a = n;
+    // Every target in a destructuring must be distinct, whether it is declared or reassigned
+    (a, a) = pair(n);
+    require(a > 0);
+  }
+}

@@ -2,6 +2,11 @@
 
 All notable changes to the "vscode-cashscript" extension will be documented in this file.
 
+## v0.9.0
+
+- Add package imports: an import path that does not start with `./`, `../` or `/` is resolved from `node_modules`, walking up parent directories like Node.js does. Completions, hovers and signature help include functions and constants from imported packages.
+- Add tuple destructuring into existing variables (`(a, b) = swap(a, b);`).
+
 ## v0.8.1
 
 - Fix the extension failing to start
