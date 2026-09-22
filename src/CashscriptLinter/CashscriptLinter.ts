@@ -1,14 +1,16 @@
 import * as path from 'path';
-import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver';
+import { Diagnostic, DiagnosticSeverity, DiagnosticTag, Range } from 'vscode-languageserver';
 import { SafeErrorListener } from './ErrorListeners';
-import type { CashScriptError, Point } from 'cashc';
+import type { CashScriptError, CashScriptWarning, Point } from 'cashc';
 import { gtr, intersects, ltr, satisfies } from 'semver';
 import { canonicaliseImportPath, collectImportGraph, parseImportStatements } from '../ImportGraph';
 import { blankOutComments } from '../utils';
 
 type CashcModule = Pick<typeof import('cashc'), 'compileString'>;
+type CompileString = CashcModule['compileString'];
 type CashscriptCompilerVersion = '0.12' | '0.13' | '0.14';
 type SourcePoint = Pick<Point, 'line' | 'column'>;
+type SourceLocation = { start: SourcePoint; end: SourcePoint };
 
 // Literal import() calls so the bundler includes each compiler version as a lazy chunk
 const CASHC_IMPORTERS: Record<CashscriptCompilerVersion, () => Promise<CashcModule>> = {
@@ -19,13 +21,16 @@ const CASHC_IMPORTERS: Record<CashscriptCompilerVersion, () => Promise<CashcModu
 
 const CASHC_VERSIONS: Record<CashscriptCompilerVersion, string> = {
   '0.12': '0.12.2',
-  '0.13': '0.13.2',
-  '0.14': '0.14.0-next.4',
+  '0.13': '0.13.3',
+  '0.14': '0.14.0-next.5',
 };
 const LATEST_COMPILER_VERSION: CashscriptCompilerVersion = '0.14';
 // Versions that predate import directives; newer versions take the full linting path
 const PRE_IMPORT_COMPILER_VERSIONS: CashscriptCompilerVersion[] = ['0.12', '0.13'];
 const SEMVER_OPTIONS = { includePrerelease: true, loose: true };
+
+// Warnings about code that has no effect, which editors render faded (CashScript 0.14+)
+const UNNECESSARY_CODE_WARNINGS = ['UnusedVariableWarning', 'UnusedAssignmentWarning'];
 
 const cashcModules: Partial<Record<CashscriptCompilerVersion, Promise<CashcModule>>> = {};
 
@@ -36,8 +41,8 @@ function loadCashc(compilerVersion: CashscriptCompilerVersion): Promise<CashcMod
 
 export default class CashscriptLinter {
   /**
-   * Compiles the document and converts compilation errors to diagnostics. Imports are
-   * resolved from disk relative to `documentPath` (undefined for unsaved documents).
+   * Compiles the document and converts compilation errors and warnings to diagnostics. Imports
+   * are resolved from disk relative to `documentPath` (undefined for unsaved documents).
    */
   static async getDiagnostics(code: string, documentPath?: string): Promise<Diagnostic[]> {
     const compilerVersion = getCompilerVersion(code);
@@ -61,26 +66,95 @@ export default class CashscriptLinter {
 }
 
 function compileAndCollectDiagnostics(
-  compileString: CashcModule['compileString'],
+  compileString: CompileString,
   code: string,
   files?: Record<string, string>,
 ): Diagnostic[] {
+  const compilation = compileDocument(compileString, code, files);
+  const ownWarnings = withoutImportedWarnings(compilation.warnings, compileString, code, files);
+
+  const warningDiagnostics = ownWarnings.map((warning) =>
+    clampDiagnosticToCode(diagnosticFromWarning(warning, compilation.lintCode), compilation.stubLine, code),
+  );
+
+  return [...compilation.errors, ...warningDiagnostics];
+}
+
+interface Compilation {
+  errors: Diagnostic[];
+  warnings: CashScriptWarning[];
+  lintCode: string;
+  stubLine?: number;
+}
+
+function compileDocument(compileString: CompileString, code: string, files?: Record<string, string>): Compilation {
   const errorListener = new SafeErrorListener();
+  const warnings: CashScriptWarning[] = [];
+  const warningListener = (warning: CashScriptWarning): void => {
+    warnings.push(warning);
+  };
   const { lintCode, stubLine } = files ? appendContractStubIfNeeded(code) : { lintCode: code, stubLine: undefined };
 
+  let thrownErrors: Diagnostic[] = [];
   try {
-    compileString(lintCode, { errorListener, files });
+    compileString(lintCode, { errorListener, warningListener, files });
   } catch (error) {
     if (errorListener.getErrs().length === 0) {
-      return [clampDiagnosticToCode(diagnosticFromCompilerError(error), stubLine, code)];
+      thrownErrors = [diagnosticFromCompilerError(error)];
     }
   }
 
-  return errorListener.getErrs().map((diagnostic) => clampDiagnosticToCode(diagnostic, stubLine, code));
+  const errors = [...errorListener.getErrs(), ...thrownErrors].map((diagnostic) =>
+    clampDiagnosticToCode(diagnostic, stubLine, code),
+  );
+
+  return { errors, warnings, lintCode, stubLine };
+}
+
+/**
+ * Removes the warnings that belong to imported files. The compiler reports those with the
+ * imported file's line numbers and no file name, so they are identified by compiling the
+ * document's import directives on their own (the same import graph without the document's
+ * own code) and removing the warnings that produces from the document's.
+ */
+function withoutImportedWarnings(
+  warnings: CashScriptWarning[],
+  compileString: CompileString,
+  code: string,
+  files?: Record<string, string>,
+): CashScriptWarning[] {
+  if (files === undefined || warnings.length === 0) return warnings;
+
+  const importStatements = parseImportStatements(code);
+  if (importStatements.length === 0) return warnings;
+
+  const importsOnlyCode = importStatements.map((statement) => `import "${statement.path}";`).join('\n');
+  const importedWarnings = compileDocument(compileString, importsOnlyCode, files).warnings;
+
+  // Multiset difference, so a warning the document raises on top of an identical imported
+  // one is still reported
+  const importedCounts = new Map<string, number>();
+  for (const warning of importedWarnings) {
+    const key = warningKey(warning);
+    importedCounts.set(key, (importedCounts.get(key) ?? 0) + 1);
+  }
+
+  return warnings.filter((warning) => {
+    const key = warningKey(warning);
+    const importedCount = importedCounts.get(key) ?? 0;
+    if (importedCount === 0) return true;
+    importedCounts.set(key, importedCount - 1);
+    return false;
+  });
+}
+
+// The message includes the warning's location, so equal keys mean the same warning
+function warningKey(warning: CashScriptWarning): string {
+  return `${warning.name}: ${warning.message}`;
 }
 
 // Appended to "library" files (top-level definitions without a contract) so semantic
-// analysis runs instead of aborting with MissingContractError; unused globals don't error
+// analysis runs instead of aborting with MissingContractError; unused globals don't warn
 const CONTRACT_STUB = 'contract CashscriptLinterStub() { function stub() { require(true); } }';
 
 const TYPE_NAME_PATTERN = 'int|bool|string|pubkey|sig|datasig|byte|bytes\\d*';
@@ -149,13 +223,10 @@ function prefetchImportedFiles(code: string, documentPath?: string): PrefetchedI
 
 /**
  * Lints each directly imported file in isolation, reporting its first error as a
- * diagnostic on the corresponding import directive in the main document.
+ * diagnostic on the corresponding import directive in the main document. Warnings
+ * inside imported files are only shown when that file itself is open.
  */
-function validateImportedFiles(
-  code: string,
-  imports: PrefetchedImports,
-  compileString: CashcModule['compileString'],
-): Diagnostic[] {
+function validateImportedFiles(code: string, imports: PrefetchedImports, compileString: CompileString): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
 
   for (const statement of parseImportStatements(code)) {
@@ -173,11 +244,7 @@ function validateImportedFiles(
       continue;
     }
 
-    const [firstError] = compileAndCollectDiagnostics(
-      compileString,
-      source,
-      rekeyFilesRelativeTo(canonicalPath, imports),
-    );
+    const [firstError] = compileDocument(compileString, source, rekeyFilesRelativeTo(canonicalPath, imports)).errors;
     if (!firstError) continue;
 
     const message =
@@ -240,19 +307,60 @@ function supportsPragmaRange(compilerVersion: CashscriptCompilerVersion, pragmaR
 
 function diagnosticFromCompilerError(error: unknown): Diagnostic {
   const originalMessage = error instanceof Error ? error.message : String(error);
-  const message = withoutLocationSuffix(originalMessage);
   const location = (error as Partial<CashScriptError> | null | undefined)?.node?.location;
+  const range = rangeFromLocation(location, originalMessage);
+
+  return Diagnostic.create(range, withoutLocationSuffix(originalMessage), DiagnosticSeverity.Error);
+}
+
+function diagnosticFromWarning(warning: CashScriptWarning, code: string): Diagnostic {
+  const fullRange = rangeFromLocation(warning.node?.location, warning.message);
+
+  // The location of an unused variable spans its whole declaration (or, for a tuple target,
+  // the whole tuple assignment), so narrow the range down to the variable name itself
+  const name = (warning.node as { name?: unknown } | undefined)?.name;
+  const range = (typeof name === 'string' && narrowRangeToWord(code, fullRange, name)) || fullRange;
+
+  const diagnostic = Diagnostic.create(range, withoutLocationSuffix(warning.message), DiagnosticSeverity.Warning);
+  diagnostic.code = warning.name;
+  if (UNNECESSARY_CODE_WARNINGS.includes(warning.name)) diagnostic.tags = [DiagnosticTag.Unnecessary];
+
+  return diagnostic;
+}
+
+// Narrows a range to the first whole-word occurrence of `word` inside it
+function narrowRangeToWord(code: string, range: Range, word: string): Range | undefined {
+  if (!/^\w+$/.test(word)) return undefined;
+
+  const lines = code.split('\n').slice(range.start.line, range.end.line + 1);
+  if (lines.length === 0) return undefined;
+  lines[lines.length - 1] = lines[lines.length - 1].slice(0, range.end.character);
+  lines[0] = lines[0].slice(range.start.character);
+
+  const text = lines.join('\n');
+  const match = new RegExp(`\\b${word}\\b`).exec(text);
+  if (!match) return undefined;
+
+  const linesBefore = text.slice(0, match.index).split('\n');
+  const line = range.start.line + linesBefore.length - 1;
+  const lineStart = linesBefore.length === 1 ? range.start.character : 0;
+  const character = lineStart + linesBefore[linesBefore.length - 1].length;
+
+  return { start: { line, character }, end: { line, character: character + word.length } };
+}
+
+// Compiler errors and warnings carry the node's location, falling back to the
+// "at Line X, Column Y" suffix of the message for nodes without one
+function rangeFromLocation(location: SourceLocation | undefined, originalMessage: string): Range {
   const messageLocation = originalMessage.match(/\bat Line (\d+), Column (\d+)$/);
   const fallbackPoint = messageLocation
     ? { line: Number(messageLocation[1]), column: Number(messageLocation[2]) }
     : { line: 1, column: 0 };
 
-  const range: Range = {
+  return {
     start: pointToPosition(location?.start ?? fallbackPoint),
     end: pointToPosition(location?.end ?? fallbackPoint),
   };
-
-  return Diagnostic.create(range, message, DiagnosticSeverity.Error);
 }
 
 function pointToPosition(point: SourcePoint): Range['start'] {

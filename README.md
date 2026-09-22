@@ -15,7 +15,7 @@ The `cashscript` extension for VS Code provides auto-completion, linting, and mo
 - Syntax Highlighting
 - Auto-Completion
 - Snippets
-- Linting
+- Linting (compiler errors and warnings)
 
 ## CashScript
 

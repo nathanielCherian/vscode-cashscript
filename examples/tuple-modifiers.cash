@@ -1,0 +1,27 @@
+// New in CashScript v0.14.0-next.5: freshly declared tuple destructuring targets accept the
+// same modifiers as regular variable declarations. `constant` makes the variable immutable
+// and `unused` drops the value right away, so only part of a tuple needs to be kept
+pragma cashscript ^0.14.0;
+
+function pair(int x) returns (int, int) {
+    return x + 1, x * 2;
+}
+
+contract TupleModifiers() {
+    function spend(int n) {
+        // `unused` on the first target: only the doubled value is kept
+        int unused incremented, int constant doubled = pair(n);
+
+        // `unused` on the last target: the padding after the payload is discarded
+        bytes payload, bytes unused padding = 0x1234.split(1);
+
+        // Modifiers can be mixed with reassignments of existing variables
+        int acc = n;
+        if (acc > 0) {
+            (acc, int unused scratch) = pair(acc);
+        }
+
+        require(acc + doubled >= 0);
+        require(payload == 0x12);
+    }
+}

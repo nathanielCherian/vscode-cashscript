@@ -1,0 +1,10 @@
+pragma cashscript ^0.14.0;
+
+contract ConstantTupleTargetReassignment() {
+  function spend(bytes data) {
+    // A tuple target declared 'constant' cannot be reassigned afterwards
+    bytes constant head, bytes tail = data.split(1);
+    head = tail;
+    require(head == 0x34);
+  }
+}

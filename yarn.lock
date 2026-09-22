@@ -180,21 +180,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cashscript/utils@npm:^0.13.2":
-  version: 0.13.2
-  resolution: "@cashscript/utils@npm:0.13.2"
+"@cashscript/utils@npm:^0.13.3":
+  version: 0.13.3
+  resolution: "@cashscript/utils@npm:0.13.3"
   dependencies:
     "@bitauth/libauth": "npm:^3.1.0-next.8"
-  checksum: 10c0/09c21b0bd86151bf93c27d244145924d4c408fff567877b00c075d788bb4a38b1ad046519f962675b3480d986d2e84dcaaa58ee4e72f4826c5783c18e396bbea
+  checksum: 10c0/d673911a59f15aa93fa2c5faf9923d56130f5377364607994bba271a24bbff11e706168458409d85cc25d9fc6a8c7c3935c432d2ffb97824c2a84128eeee9dfc
   languageName: node
   linkType: hard
 
-"@cashscript/utils@npm:^0.14.0-next.4":
-  version: 0.14.0-next.4
-  resolution: "@cashscript/utils@npm:0.14.0-next.4"
+"@cashscript/utils@npm:^0.14.0-next.5":
+  version: 0.14.0-next.5
+  resolution: "@cashscript/utils@npm:0.14.0-next.5"
   dependencies:
     "@bitauth/libauth": "npm:^3.1.0-next.8"
-  checksum: 10c0/29bc9bd695913f13ab59cf97bdce91cf0d073c7aacd3ad8a52a5d36043809ca2babbd09a71939a7dadbc09ef7cea97be105d2218b25ceeeb9fff0a839c1614fa
+  checksum: 10c0/72da413452896b2f94d74ceb3acd3bf19fa8bcf4bde3d7850a9f61aa54585cfff38b3fd326d4752c4e154e378dd9d972bca9bf4a2a23b0e6787ede1f9dfb8e07
   languageName: node
   linkType: hard
 
@@ -1107,33 +1107,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cashc-013@npm:cashc@^0.13.2":
-  version: 0.13.2
-  resolution: "cashc@npm:0.13.2"
+"cashc-013@npm:cashc@^0.13.3":
+  version: 0.13.3
+  resolution: "cashc@npm:0.13.3"
   dependencies:
     "@bitauth/libauth": "npm:^3.1.0-next.8"
-    "@cashscript/utils": "npm:^0.13.2"
+    "@cashscript/utils": "npm:^0.13.3"
     antlr4: "npm:^4.13.2"
     commander: "npm:^14.0.0"
     semver: "npm:^7.7.2"
   bin:
     cashc: dist/cashc-cli.js
-  checksum: 10c0/d47d3da59f99d9a702f415437bb63998d0a2ef60dbe43ee31dff9e312261d4b2ebc793b9d87ba0c4ed9160e618958f3c7390badcad49089d0c493b66d6b39750
+  checksum: 10c0/3c57933064e1163b177aa6647d7c71a339e57c15b93dc490354779d3626cbb04c630a29c86aabc5a86e91b42a808bd258215a6bfbcbfb199b9c675a8db348b4a
   languageName: node
   linkType: hard
 
-"cashc@npm:^0.14.0-next.4":
-  version: 0.14.0-next.4
-  resolution: "cashc@npm:0.14.0-next.4"
+"cashc@npm:^0.14.0-next.5":
+  version: 0.14.0-next.5
+  resolution: "cashc@npm:0.14.0-next.5"
   dependencies:
     "@bitauth/libauth": "npm:^3.1.0-next.8"
-    "@cashscript/utils": "npm:^0.14.0-next.4"
+    "@cashscript/utils": "npm:^0.14.0-next.5"
     antlr4: "npm:^4.13.2"
     commander: "npm:^14.0.0"
     semver: "npm:^7.8.5"
   bin:
     cashc: dist/cashc-cli.js
-  checksum: 10c0/fbe95b532716d5f9f5fdb5da38700b9fb5f9f232ff377bdd9c783dd3cc6502489a26ab1feed83a29cc7dafb9fd5654ee47137f9aa78780d3da903daa5514315c
+  checksum: 10c0/ed28838787f570d0cdf8ee4d5ed3731b648b983f17610cf6404fc3581459ffcdc115c5a7f1af55002cf1302168416e165f438fd0f61708cd9aed4c5b496823ad
   languageName: node
   linkType: hard
 
@@ -1145,9 +1145,9 @@ __metadata:
     "@types/semver": "npm:^7"
     "@types/vscode": "npm:^1.83.0"
     "@vscode/vsce": "npm:^3.0.0"
-    cashc: "npm:^0.14.0-next.4"
+    cashc: "npm:^0.14.0-next.5"
     cashc-012: "npm:cashc@^0.12.2"
-    cashc-013: "npm:cashc@^0.13.2"
+    cashc-013: "npm:cashc@^0.13.3"
     prettier: "npm:^3.4.2"
     rolldown: "npm:^1.2.2"
     semver: "npm:^7.7.2"

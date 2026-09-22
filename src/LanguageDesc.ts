@@ -114,7 +114,7 @@ let DECLARATION_KEYWORDS: Data = {
   returns: {
     code: 'function name(params) returns (T1, T2, ...)',
     codeDesc:
-      'Declares the return type(s) of a user-defined function. A call to a function with multiple return values must be destructured into exactly one target per return value (`int a, int b = fn()`). Targets without a type reassign an existing variable, optionally mixed with fresh declarations and optionally parenthesised (`(a, int b) = fn()`). A function without a `returns` clause returns nothing and is called as a statement. Available since CashScript 0.14.',
+      'Declares the return type(s) of a user-defined function. A call to a function with multiple return values must be destructured into exactly one target per return value (`int a, int b = fn()`). Targets without a type reassign an existing variable, optionally mixed with fresh declarations and optionally parenthesised (`(a, int b) = fn()`); declared targets accept the `constant` and `unused` modifiers. A function without a `returns` clause returns nothing and is called as a statement. Available since CashScript 0.14.',
   },
 };
 
@@ -128,7 +128,7 @@ let MODIFIERS: Data = {
   unused: {
     code: 'type unused name',
     codeDesc:
-      'Marks a parameter or variable as intentionally unused. The value is dropped from the stack immediately after its declaration and cannot be referenced later. Useful for padding contract bytecode (higher opcost budget) or for nonces to differentiate between similar contracts. Available since CashScript 0.14.',
+      'Marks a parameter or variable as intentionally unused, which silences the compiler warning for unused variables. The value is dropped from the stack immediately after its declaration and cannot be referenced later. Useful for padding contract bytecode (higher opcost budget) or for nonces to differentiate between similar contracts. Available since CashScript 0.14.',
   },
 };
 

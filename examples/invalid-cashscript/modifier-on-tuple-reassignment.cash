@@ -1,0 +1,11 @@
+pragma cashscript ^0.14.0;
+
+contract ModifierOnTupleReassignment() {
+  function spend(bytes data) {
+    bytes head = 0x00;
+    // Modifiers are only valid on freshly declared targets (with a type name),
+    // not when reassigning an existing variable
+    constant head, bytes tail = data.split(1);
+    require(head == 0x12 && tail == 0x34);
+  }
+}

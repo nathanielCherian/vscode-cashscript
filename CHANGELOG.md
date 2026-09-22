@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-cashscript" extension will be documented in this file.
 
+## v0.10.0
+
+- Show compiler warnings as warning diagnostics: unused variables that are not marked `unused` and values assigned to a variable that are never read afterwards.
+- Add the `constant` and `unused` modifiers on tuple destructuring targets (`bytes unused head, bytes tail = x.split(1);`).
+- Update underlying compiler versions.
+
 ## v0.9.0
 
 - Add package imports: an import path that does not start with `./`, `../` or `/` is resolved from `node_modules`, walking up parent directories like Node.js does. Completions, hovers and signature help include functions and constants from imported packages.

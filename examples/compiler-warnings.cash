@@ -1,0 +1,32 @@
+// New in CashScript v0.14.0-next.5: unused variables are a compiler warning instead of an
+// error, and the compiler also warns when a value assigned to a variable is never read.
+// This file compiles, but every warning below shows up as a (faded) warning diagnostic
+pragma cashscript ^0.14.0;
+
+// Parameters and locals of reusable functions are checked too: 'b' is never read
+function addOne(int a, int b) returns (int) {
+    return a + 1;
+}
+
+contract CompilerWarnings(pubkey owner, bytes nonce) {
+    // Parameters that are intentionally unused are marked as such and produce no warning
+    function spend(sig ownerSig, int amount, bytes unused padding) {
+        // Declared but never read
+        int fee = 1000;
+
+        // Only ever assigned to: reported as an unused variable, since only reads count
+        int total = amount;
+        total = amount + 1;
+
+        // Read once, then reassigned without being read again: the second assignment has no effect
+        int counter = amount;
+        require(counter > 0);
+        counter = 0;
+
+        // Only half of the tuple is needed: mark 'head' as `unused` instead
+        bytes head, bytes tail = nonce.split(1);
+        require(tail.length > 0);
+
+        require(checkSig(ownerSig, owner));
+    }
+}

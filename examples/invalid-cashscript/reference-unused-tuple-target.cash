@@ -1,0 +1,11 @@
+pragma cashscript ^0.14.0;
+
+contract ReferenceUnusedTupleTarget() {
+  function spend(bytes data) {
+    // A tuple target marked 'unused' is dropped from the stack immediately
+    // and cannot be referenced later
+    bytes unused head, bytes tail = data.split(1);
+    require(head == 0x12);
+    require(tail == 0x34);
+  }
+}
