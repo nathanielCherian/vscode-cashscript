@@ -1,9 +1,14 @@
-import * as path from 'path';
 import { Diagnostic, DiagnosticSeverity, DiagnosticTag, Range } from 'vscode-languageserver';
 import { SafeErrorListener } from './ErrorListeners';
 import type { CashScriptError, CashScriptWarning, Point } from 'cashc';
 import { gtr, intersects, ltr, satisfies } from 'semver';
-import { canonicaliseImportPath, collectImportGraph, parseImportStatements } from '../ImportGraph';
+import {
+  collectImportGraph,
+  DocumentImport,
+  ImportStatement,
+  parseImportStatements,
+  SourceRange,
+} from '../ImportGraph';
 import { blankOutComments } from '../utils';
 
 type CashcModule = Pick<typeof import('cashc'), 'compileString'>;
@@ -22,7 +27,7 @@ const CASHC_IMPORTERS: Record<CashscriptCompilerVersion, () => Promise<CashcModu
 const CASHC_VERSIONS: Record<CashscriptCompilerVersion, string> = {
   '0.12': '0.12.2',
   '0.13': '0.13.3',
-  '0.14': '0.14.0-next.5',
+  '0.14': '0.14.0-next.7',
 };
 const LATEST_COMPILER_VERSION: CashscriptCompilerVersion = '0.14';
 // Versions that predate import directives; newer versions take the full linting path
@@ -58,7 +63,7 @@ export default class CashscriptLinter {
 
     // Errors in imported files carry that file's line numbers, so imports are linted
     // separately (reported on their directive) before the main document compiles
-    const importDiagnostics = validateImportedFiles(code, imports, compileString);
+    const importDiagnostics = validateImports(imports, compileString);
     if (importDiagnostics.length > 0) return importDiagnostics;
 
     return compileAndCollectDiagnostics(compileString, code, imports.files);
@@ -73,14 +78,15 @@ function compileAndCollectDiagnostics(
   const compilation = compileDocument(compileString, code, files);
   const ownWarnings = withoutImportedWarnings(compilation.warnings, compileString, code, files);
 
-  const warningDiagnostics = ownWarnings.map((warning) =>
-    clampDiagnosticToCode(diagnosticFromWarning(warning, compilation.lintCode), compilation.stubLine, code),
-  );
+  const warningDiagnostics = ownWarnings.map((warning) => diagnosticFromWarning(warning, compilation.lintCode));
 
-  return [...compilation.errors, ...warningDiagnostics];
+  return [...compilation.errors, ...warningDiagnostics].map((diagnostic) =>
+    clampDiagnosticToCode(diagnostic, compilation.stubLine, code),
+  );
 }
 
 interface Compilation {
+  /** Located in `lintCode`, or in an imported file for errors inside imported files */
   errors: Diagnostic[];
   warnings: CashScriptWarning[];
   lintCode: string;
@@ -104,9 +110,7 @@ function compileDocument(compileString: CompileString, code: string, files?: Rec
     }
   }
 
-  const errors = [...errorListener.getErrs(), ...thrownErrors].map((diagnostic) =>
-    clampDiagnosticToCode(diagnostic, stubLine, code),
-  );
+  const errors = [...errorListener.getErrs(), ...thrownErrors];
 
   return { errors, warnings, lintCode, stubLine };
 }
@@ -128,8 +132,7 @@ function withoutImportedWarnings(
   const importStatements = parseImportStatements(code);
   if (importStatements.length === 0) return warnings;
 
-  const importsOnlyCode = importStatements.map((statement) => `import "${statement.path}";`).join('\n');
-  const importedWarnings = compileDocument(compileString, importsOnlyCode, files).warnings;
+  const importedWarnings = compileDocument(compileString, importsOnlyCode(importStatements), files).warnings;
 
   // Multiset difference, so a warning the document raises on top of an identical imported
   // one is still reported
@@ -151,6 +154,12 @@ function withoutImportedWarnings(
 // The message includes the warning's location, so equal keys mean the same warning
 function warningKey(warning: CashScriptWarning): string {
   return `${warning.name}: ${warning.message}`;
+}
+
+// A document with only these import directives compiles the same (part of the) import graph
+// from the same `files` as the document itself, without any of the document's own code
+function importsOnlyCode(importStatements: ImportStatement[]): string {
+  return importStatements.map((statement) => `import "${statement.path}";`).join('\n');
 }
 
 // Appended to "library" files (top-level definitions without a contract) so semantic
@@ -191,82 +200,70 @@ function clampDiagnosticToCode(diagnostic: Diagnostic, stubLine: number | undefi
 
 /** The document's imported sources, prepared for cashc's in-memory `files` option */
 interface PrefetchedImports {
-  /** Imported sources, keyed the way cashc's in-memory resolver looks them up */
+  /** The document's own import directives, and how they resolved */
+  documentImports: DocumentImport[];
+  /** Imported sources, keyed by the logical path that cashc's in-memory resolver looks them up by */
   files: Record<string, string>;
-  /** Keys of files that were reached through a package (node_modules) import */
-  packagePaths: Set<string>;
-  /** Import paths that could not be found in any node_modules directory */
-  unresolvedPackageImports: Set<string>;
 }
 
-const NO_IMPORTS: PrefetchedImports = {
-  files: {},
-  packagePaths: new Set(),
-  unresolvedPackageImports: new Set(),
-};
+const NO_IMPORTS: PrefetchedImports = { documentImports: [], files: {} };
 
 /**
- * Reads the document's import graph from disk, keyed by canonical path for cashc's
- * `files` option. Unreadable files are left out so the compiler reports them in place.
+ * Reads the document's import graph from disk, keyed by logical path for cashc's `files`
+ * option. Unreadable files are left out so the compiler reports them in place.
  */
 function prefetchImportedFiles(code: string, documentPath?: string): PrefetchedImports {
   if (documentPath === undefined) return NO_IMPORTS;
 
-  const { files, unresolvedPackageImports } = collectImportGraph(code, documentPath);
+  const { documentImports, files } = collectImportGraph(code, documentPath);
 
   return {
-    files: Object.fromEntries(files.map((file) => [file.canonicalPath, file.content])),
-    packagePaths: new Set(files.filter((file) => file.isPackageImport).map((file) => file.canonicalPath)),
-    unresolvedPackageImports,
+    documentImports,
+    files: Object.fromEntries(files.map((file) => [file.logicalPath, file.content])),
   };
 }
 
 /**
- * Lints each directly imported file in isolation, reporting its first error as a
- * diagnostic on the corresponding import directive in the main document. Warnings
- * inside imported files are only shown when that file itself is open.
+ * Lints each of the document's imports, reporting its first error as a diagnostic on the
+ * import directive: a directive that cashc rejects while resolving imports from disk (which the
+ * compiler cannot report, as it only sees the files that were read), or else the first compile
+ * error in the imported files. Warnings inside imported files are only shown when that file
+ * itself is open.
  */
-function validateImportedFiles(code: string, imports: PrefetchedImports, compileString: CompileString): Diagnostic[] {
+function validateImports(imports: PrefetchedImports, compileString: CompileString): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
 
-  for (const statement of parseImportStatements(code)) {
-    const canonicalPath = canonicaliseImportPath('.', statement.path);
-    const source = imports.files[canonicalPath];
-
-    if (source === undefined) {
-      // node_modules resolution happens here rather than in the compiler (which only sees the
-      // in-memory files), so a package that isn't installed is reported here too
-      if (imports.unresolvedPackageImports.has(statement.path)) {
-        const message = `Could not find imported file '${statement.path}' in any node_modules directory`;
-        diagnostics.push(Diagnostic.create(statement.range, message, DiagnosticSeverity.Error));
-      }
-      // Other unreadable imports are reported (with the right location) by the main compile
+  for (const { statement, logicalPath, failure } of imports.documentImports) {
+    if (failure !== undefined) {
+      const message =
+        failure.importer === undefined
+          ? failure.message
+          : importedFileErrorMessage(statement, failure.statement.range.start, failure.message);
+      diagnostics.push(Diagnostic.create(statement.range, message, DiagnosticSeverity.Error));
       continue;
     }
 
-    const [firstError] = compileDocument(compileString, source, rekeyFilesRelativeTo(canonicalPath, imports)).errors;
+    // Unreadable imports are reported (with the right location) by the main compile
+    if (logicalPath === undefined || imports.files[logicalPath] === undefined) continue;
+
+    // The directive is compiled on its own, so the compiler resolves the imported file (and
+    // detects cycles) exactly like it does for the document
+    const [firstError] = compileDocument(compileString, importsOnlyCode([statement]), imports.files).errors;
     if (!firstError) continue;
 
-    const message =
-      `Imported file '${statement.path}' contains an error at ` +
-      `Line ${firstError.range.start.line + 1}, Column ${firstError.range.start.character}: ${firstError.message}`;
+    const message = importedFileErrorMessage(statement, firstError.range.start, firstError.message);
     diagnostics.push(Diagnostic.create(statement.range, message, DiagnosticSeverity.Error));
   }
 
   return diagnostics;
 }
 
-// Re-keys the map relative to the imported file's directory so its own imports resolve;
-// the file itself stays in the map so cycles surface as the compiler's cyclic-import error.
-// Package imports are looked up verbatim by the compiler, so their keys are left alone.
-function rekeyFilesRelativeTo(canonicalPath: string, imports: PrefetchedImports): Record<string, string> {
-  const importDir = path.posix.dirname(canonicalPath);
-
-  return Object.fromEntries(
-    Object.entries(imports.files).map(([filePath, content]) => [
-      imports.packagePaths.has(filePath) ? filePath : path.posix.relative(importDir, filePath),
-      content,
-    ]),
+// Errors inside imported files are located in the file they occur in (which may be imported by
+// the directly imported file), while the compiler does not say which file that is
+function importedFileErrorMessage(statement: ImportStatement, position: SourceRange['start'], message: string): string {
+  return (
+    `Imported file '${statement.path}' contains an error at ` +
+    `Line ${position.line + 1}, Column ${position.character}: ${message}`
   );
 }
 

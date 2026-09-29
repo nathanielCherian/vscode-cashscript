@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-cashscript" extension will be documented in this file.
 
+## v0.10.1
+
+- Update underlying compiler version.
+- Resolve imports the same way as the latest 0.14-next compiler.
+- Show the compiler's file name for imported functions and constants in hovers and completions (e.g. `package:fibonacci/fib.cash` for files in packages).
+
 ## v0.10.0
 
 - Show compiler warnings as warning diagnostics: unused variables that are not marked `unused` and values assigned to a variable that are never read afterwards.

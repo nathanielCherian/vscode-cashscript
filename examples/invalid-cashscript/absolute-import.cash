@@ -1,0 +1,10 @@
+pragma cashscript ^0.14.0;
+
+// Absolute import paths are not supported, use a relative path or a package import instead
+import "/usr/local/lib/cashscript/math.cash";
+
+contract AbsoluteImport() {
+  function spend(int x) {
+    require(x == 1);
+  }
+}

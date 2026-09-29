@@ -100,7 +100,7 @@ let STATEMENTS: Data = {
   import: {
     code: 'import "path/to/file.cash";',
     codeDesc:
-      'Imports the reusable functions and global constants declared in another CashScript file. Paths starting with `./`, `../` or `/` are resolved relative to this file; any other path is a package import, resolved from `node_modules` (e.g. `import "mathlib/math.cash";`). Import directives must appear at the top of the file, after any `pragma` directives. Available since CashScript 0.14.',
+      'Imports the reusable functions and global constants declared in another CashScript file. Paths starting with `./` or `../` are resolved relative to this file, and absolute paths are not supported; any other path is a package import, resolved from `node_modules` (e.g. `import "mathlib/math.cash";`). Import directives must appear at the top of the file, after any `pragma` directives. Available since CashScript 0.14.',
   },
   return: {
     code: 'return expression(, expression...)',

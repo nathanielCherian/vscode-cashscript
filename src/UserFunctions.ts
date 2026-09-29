@@ -46,8 +46,8 @@ export function collectUserSymbols(code: string, documentPath?: string): UserSym
 
   for (const file of collectImportGraph(code, documentPath).files) {
     const imported = collectFromSource(file.content);
-    symbols.functions.push(...imported.functions.map((f) => ({ ...f, importedFrom: file.canonicalPath })));
-    symbols.constants.push(...imported.constants.map((c) => ({ ...c, importedFrom: file.canonicalPath })));
+    symbols.functions.push(...imported.functions.map((f) => ({ ...f, importedFrom: file.logicalPath })));
+    symbols.constants.push(...imported.constants.map((c) => ({ ...c, importedFrom: file.logicalPath })));
   }
 
   return symbols;
