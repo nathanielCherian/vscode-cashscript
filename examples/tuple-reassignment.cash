@@ -1,4 +1,4 @@
-// New in CashScript v0.14.0-next.4: a tuple destructuring target without a type reassigns an
+// New in CashScript v0.14: a tuple destructuring target without a type reassigns an
 // existing variable instead of declaring a new one, optionally parenthesised and optionally
 // mixed with fresh declarations
 pragma cashscript ^0.14.0;

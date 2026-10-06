@@ -1,4 +1,4 @@
-// New in CashScript v0.14.0-next.5: freshly declared tuple destructuring targets accept the
+// New in CashScript v0.14: freshly declared tuple destructuring targets accept the
 // same modifiers as regular variable declarations. `constant` makes the variable immutable
 // and `unused` drops the value right away, so only part of a tuple needs to be kept
 pragma cashscript ^0.14.0;

@@ -1,4 +1,4 @@
-// New additions in CashScript v0.14.0-next.4:
+// New additions in CashScript v0.14:
 // - package imports: paths that don't start with './', '../' or '/' are resolved from
 //   node_modules, so contract libraries can be published and installed as npm packages
 // - tuple destructuring into existing variables (see tuple-reassignment.cash)

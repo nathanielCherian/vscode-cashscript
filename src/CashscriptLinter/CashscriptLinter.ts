@@ -27,7 +27,7 @@ const CASHC_IMPORTERS: Record<CashscriptCompilerVersion, () => Promise<CashcModu
 const CASHC_VERSIONS: Record<CashscriptCompilerVersion, string> = {
   '0.12': '0.12.2',
   '0.13': '0.13.3',
-  '0.14': '0.14.0-next.7',
+  '0.14': '0.14.0',
 };
 const LATEST_COMPILER_VERSION: CashscriptCompilerVersion = '0.14';
 // Versions that predate import directives; newer versions take the full linting path

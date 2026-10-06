@@ -2,6 +2,11 @@
 
 All notable changes to the "vscode-cashscript" extension will be documented in this file.
 
+## v0.10.2
+
+- Update the bundled compiler to the CashScript v0.14.0 release.
+- Fix compiler warnings in the published extension missing their faded "unnecessary code" styling and showing a garbled warning code.
+
 ## v0.10.1
 
 - Update underlying compiler version.

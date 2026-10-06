@@ -29,6 +29,9 @@ export default defineConfig([
     output: {
       ...shared.output,
       format: 'es',
+      // cashc names its errors and warnings after their class (e.g. 'UnusedVariableWarning'),
+      // which the linter relies on, so minification must not rename classes
+      keepNames: true,
       entryFileNames: '[name].mjs',
       chunkFileNames: '[name]-[hash].mjs',
     },

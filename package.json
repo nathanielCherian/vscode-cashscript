@@ -3,7 +3,7 @@
   "publisher": "CashScript",
   "displayName": "CashScript VSCode",
   "description": "Cashscript language support for Visual Studio Code",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "icon": "media/icon.png",
   "repository": {
     "type": "git",
@@ -82,7 +82,7 @@
     ]
   },
   "dependencies": {
-    "cashc": "^0.14.0-next.7",
+    "cashc": "^0.14.0",
     "cashc-012": "npm:cashc@^0.12.2",
     "cashc-013": "npm:cashc@^0.13.3",
     "semver": "^7.7.2",
