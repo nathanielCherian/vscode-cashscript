@@ -33,6 +33,9 @@
     },
     {
       "include": "#members"
+    },
+    {
+      "include": "#function-call"
     }
   ],
   "repository": {
@@ -352,6 +355,14 @@
           }
         }
       ]
+    },
+    "function-call": {
+      "match": "\\b([A-Za-z_]\\w*)(?=\\s*\\()",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.call.cashscript"
+        }
+      }
     },
     "punctuation": {
       "patterns": [
